@@ -26,10 +26,10 @@ public class UserService {
 		User user = userDAO.findByName(name);
 
 		if (user == null)
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Credenciales invalidas");
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid credentials");
 		String pwdEncripted = org.apache.commons.codec.digest.DigestUtils.sha512Hex(pwd);
 		if (!user.getPwd().equals(pwdEncripted))
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Credenciales invalidas");
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid credentials");
 
 	}
 

@@ -20,10 +20,10 @@ public class GameController {
 	private GameService gameService;
 
 	@GetMapping("/requestGame")
-	public Match requestGame(@RequestParam String juego, @RequestParam String player) {
+	public Match requestGame(@RequestParam String game, @RequestParam String player) {
 		
-		if (!juego.equals("nm"))
+		if (!game.equals("nm"))
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "game not found");
-		return this.gameService.requestGame(juego, player);
+		return this.gameService.requestGame(game, player);
 	}
 }

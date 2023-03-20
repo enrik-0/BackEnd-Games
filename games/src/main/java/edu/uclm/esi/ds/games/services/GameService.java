@@ -17,8 +17,8 @@ public class GameService {
 		this.matches = new ConcurrentHashMap<>();
 	}
 
-	public Match requestGame(String juego, String player) {
-		Match match = waitingRoom.findMatch(juego, player);
+	public Match requestGame(String game, String player) {
+		Match match = waitingRoom.findMatch(game, player);
 		if (match.isReady())
 			matches.put(match.getId(), match);
 

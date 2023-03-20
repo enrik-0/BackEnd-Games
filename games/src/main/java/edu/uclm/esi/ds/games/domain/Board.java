@@ -22,7 +22,7 @@ public class Board {
 	public Board copy() {
 
 		Board board = new Board();
-		board.digits = new byte[9][9];
+		board.digits = digits.clone();
 
 		return board;
 	}
