@@ -39,7 +39,7 @@ public class TestGames {
 	}
 
 	private String sendRequest(String player) throws Exception, UnsupportedEncodingException {
-		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?juego=nm&player=" + player);
+		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game=nm&player=" + player);
 		ResultActions response = this.server.perform(request);
 		MvcResult result = response.andExpect(status().isOk()).andReturn();
 		MockHttpServletResponse http = result.getResponse();
@@ -49,7 +49,7 @@ public class TestGames {
 
 	@Test
 	void RejectRequest() throws Exception {
-		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?juego=trivial&player=Maria");
+		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game=trivial&player=Maria");
 		this.server.perform(request).andExpect(status().isNotFound());
 	}
 }
