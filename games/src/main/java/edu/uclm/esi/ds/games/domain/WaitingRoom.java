@@ -4,16 +4,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class WaitingRoom {
 
-	private ConcurrentHashMap<String, Match> matches;
+	private ConcurrentHashMap<String, NumberMatch> matches;
 
 	public WaitingRoom() {
 		this.matches = new ConcurrentHashMap<>();
 	}
 
-	public Match findMatch(String game, String player) {
-		Match match = matches.get(game);
+	public NumberMatch findMatch(String game, String player) {
+		NumberMatch match = matches.get(game);
 		if (match == null) {
-			match = new Match();
+			match = new NumberMatch();
 			match.addPlayer(player);
 			this.matches.put(game, match);
 		} else {
