@@ -5,8 +5,8 @@ public class Number {
 	byte number;
 	 boolean free = false;
 	 
-	 public Number(byte number) {
-		 this.number = number;
+	 public Number(int i) {
+		 this.number = (byte) i;
 	 }
 	 public byte getNumber() {
 		 return number;

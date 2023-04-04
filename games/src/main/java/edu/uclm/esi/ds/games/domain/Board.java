@@ -9,7 +9,7 @@ public class Board {
 	public Board() {
 
 		SecureRandom dice = new SecureRandom();
-		this.digits = new Number[81];
+		this.setDigits(new Number[81]);
 		for (int i = 0; i < 81; i++)
 				this.digits[i] = new Number((byte) dice.nextInt(10));
 	}
@@ -20,7 +20,24 @@ public class Board {
 
 	public Board copy() {
 		Board board = new Board();
-		board.digits = digits.clone();
+		board.setDigits(digits.clone());
 		return board;
 	}
-}
+	public void updateBoard(int first, int second) {
+		Movement move = new MovementNM(first, second);
+		if(move.isValid(digits)) {
+			digits[first].setFree(true);
+			digits[second].setFree(true);
+		}
+		
+		
+		
+	}
+
+	public void setDigits(Number[] digits) {
+		this.digits = digits;
+	}
+
+		
+	}
+

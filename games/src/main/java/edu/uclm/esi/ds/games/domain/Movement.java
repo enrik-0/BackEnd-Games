@@ -1,5 +1,6 @@
 package edu.uclm.esi.ds.games.domain;
 
-public class Movement {
+public interface Movement {
+	public abstract boolean isValid(Number[] board);
 
 }
