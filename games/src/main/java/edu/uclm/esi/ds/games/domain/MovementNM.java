@@ -12,6 +12,7 @@ public class MovementNM implements Movement{
 		position[0] = (byte) (i >= j? j : i);
 		position[1] = (byte) (j <= i? i : j);
 	}
+
 	public  boolean isValid(Number[] board) {
 		return validate(board);
 	}

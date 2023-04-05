@@ -6,12 +6,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class NumberMatch extends Match {
-
 	public NumberMatch() {
 		this.id = UUID.randomUUID().toString();
 		this.players = new LinkedList<>();
 		this.boards = new HashMap<>();
-
 	}
 
 	public String getId() {
@@ -19,7 +17,6 @@ public class NumberMatch extends Match {
 	}
 
 	public boolean isReady() {
-
 		return this.ready;
 	}
 
@@ -39,11 +36,13 @@ public class NumberMatch extends Match {
 			setReady(true);
 	}
 
-	void buildBoards() {
+	protected void buildBoards() {
 		Board board = new Board();
 		this.boards.put(this.players.get(0), board);
 		this.boards.put(this.players.get(1), board.copy());
-
 	}
 
+	public List<Board> getBoards() {
+		return this.boards.values().stream().toList();
+	}
 }
