@@ -12,7 +12,7 @@ public class MovementNM implements Movement{
 		position[0] = (byte) (i >= j? j : i);
 		position[1] = (byte) (j <= i? i : j);
 	}
-
+	
 	public  boolean isValid(Number[] board) {
 		return validate(board);
 	}
@@ -21,34 +21,41 @@ public class MovementNM implements Movement{
 		ArrayList<Byte> all = new ArrayList<Byte>();
 		ArrayList<Byte> unique;
 		boolean valid = true;
-		if(!validateCombination(board)) {
+		if(!validPosition(board)) {
 			valid = false;
-		}
-		else {
+		} else {
 			all.addAll(calcDiagonals(board));
 			all.addAll(calcHorizontal(board));
 			all.addAll(calcVertical(board));
 			HashSet<Byte> noDuplicated = new HashSet<Byte>(all);
 			unique = new ArrayList<Byte>(noDuplicated);
-			if (unique.contains(position[1]))
-				valid = true;
+			if (!unique.contains(position[1]))
+				valid = false;
 		}
+
 		return valid;
 	}
-	private boolean validateCombination(Number[] board) {
-
+	private boolean validPosition(Number[] board) {
 		boolean valid = false;
-		if(board[position[0]].getNumber()
-				== board[position[1]].getNumber() ||
-				board[position[0]].getNumber() +
-				board[position[1]].getNumber() == 10)
+
+		if (sameNumber(board) || addUpTen(board))
 			valid = true;
+
 		return valid;
 	}
 	
+	private boolean sameNumber(Number[] board) {
+		return board[position[0]].getNumber() == board[position[1]].getNumber();
+	}
+
+	private boolean addUpTen(Number[] board) {
+		return (board[position[0]].getNumber() +
+				board[position[1]].getNumber()) == 10;
+	}
+
 	private ArrayList<Byte> calcHorizontal(Number[] board) {
-		byte lengthH = 9;
 		ArrayList<Byte> numbers = new ArrayList<Byte>();
+		byte lengthH = 9;
 		boolean next = true;
 		byte current = position[0];
 		do {
@@ -121,10 +128,11 @@ public class MovementNM implements Movement{
 
 	private  byte calcHorizontalR(byte start, byte lengthH){
 		byte result = (byte) (start + 1);
-		if(result >= lengthH)
-			result = -1;
-		return result;
 
+		if (result >= lengthH)
+			result = -1;
+
+		return result;
 	}
 
 	private byte calcHorizontalL(byte start) {
@@ -136,44 +144,68 @@ public class MovementNM implements Movement{
 	}
 	
 	private byte  calcVerticalDown(byte start, byte lengthH, byte lengthV, byte k) {
-		byte result = (byte) (start + lengthH * k);
-		int i = start - (start % lengthH )* k;
-		if  (i >= lengthV)
+		byte result;
+		int i = start - (start % lengthH ) * k;
+
+		if (i >= lengthV) {
 			result = -1;
+		} else {
+			result = (byte) (start + lengthH * k);
+		}
+
 		return result;
 	}
 	
 	private byte calcDiagonalLDown(byte start, byte lengthH) {
-		byte result = (byte) (start + lengthH - 1);
-		if (start % lengthH ==  0)
+		byte result;
+
+		if (start % lengthH ==  0) {
 			result = -1;
+		} else {
+			result = (byte) (start + lengthH - 1);
+		}
+
 		return result;
 	}
 	
 	private byte calcDiagonalLUp(byte start, byte lengthH) {
-		byte result = (byte) (start - lengthH - 1);
-		if(start % lengthH == 0)
+		byte result;
+
+		if(start % lengthH == 0) {
 			result = -1;
+		} else {
+			result = (byte) (start - lengthH - 1);
+		}
+
 		return result;
 	}
 	
 	private byte calcDiagonalRDown(byte start, byte lengthH) {
-		byte result = (byte) (start + lengthH + 1);
-		if(start % lengthH == lengthH - 1)
+		byte result;
+
+		if(start % lengthH == lengthH - 1) {
 			result = -1;
+		} else {
+			result = (byte) (start + lengthH + 1);
+		}
+
 		return result;
 	}
 	
 	private byte calcDiagonalRUp(byte start, byte lengthH) {
-		byte result = (byte) (start - lengthH + 1);
-		if (start % lengthH == lengthH - 1)
+		byte result;
+
+		if (start % lengthH == lengthH - 1) {
 			result = -1;
+		} else {
+			result = (byte) (start - lengthH + 1);
+		}
+
 		return result;
-		
 	}
 	
 	private ArrayList<Byte> calcDiagonals(Number[] board) {
-		ArrayList<Byte> numbers = new  ArrayList<Byte>();
+		ArrayList<Byte> numbers = new ArrayList<Byte>();
 		Byte lengthH = 9;
 		byte lengthV = (byte) (board.length / lengthH);
 		boolean next = true;
@@ -221,7 +253,7 @@ public class MovementNM implements Movement{
 		next = true;
 		current = position[0];
 		do {
-			current = calcDiagonalRUp(current, lengthH);
+			current = calcDiagonalRDown(current, lengthH);
 			if (current < 0)
 				next = false;
 			else

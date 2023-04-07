@@ -7,6 +7,7 @@ public abstract class Match {
 	protected String id;
 	protected boolean ready;
 	protected List<String> players;
+	// { "player": "board" }
 	protected HashMap<String, Board> boards;
 	
 	
