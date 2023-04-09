@@ -56,16 +56,17 @@ public class MovementNM implements Movement{
 	private ArrayList<Byte> calcHorizontal(Number[] board) {
 		ArrayList<Byte> numbers = new ArrayList<Byte>();
 		byte lengthH = 9;
+		byte  length = (byte) (lengthH * board.length/lengthH);
 		boolean next = true;
 		byte current = position[0];
 		do {
-			current = calcHorizontalR(current, lengthH);
+			current = calcHorizontalR(current, length);
 			if (current < 0)
 				next = false;
 			else
 				if(!board[current].isFree()) {
 					next = false;
-					numbers.add(board[current].getNumber());
+					numbers.add(current);
 			}
 		}while(next);
 		
@@ -78,7 +79,7 @@ public class MovementNM implements Movement{
 			else
 				if(!board[current].isFree()) {
 					next = false;
-					numbers.add(board[current].getNumber());
+					numbers.add(current);
 			}
 		}while(next);
 
@@ -126,12 +127,10 @@ public class MovementNM implements Movement{
 		return numbers;
 	}
 
-	private  byte calcHorizontalR(byte start, byte lengthH){
+	private  byte calcHorizontalR(byte start, byte length){
 		byte result = (byte) (start + 1);
-
-		if (result >= lengthH)
+		if  (result > length)
 			result = -1;
-
 		return result;
 	}
 
@@ -207,7 +206,6 @@ public class MovementNM implements Movement{
 	private ArrayList<Byte> calcDiagonals(Number[] board) {
 		ArrayList<Byte> numbers = new ArrayList<Byte>();
 		Byte lengthH = 9;
-		byte lengthV = (byte) (board.length / lengthH);
 		boolean next = true;
 		byte current = position[0];
 		do {

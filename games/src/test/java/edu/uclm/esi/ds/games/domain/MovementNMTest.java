@@ -31,7 +31,13 @@ class MovementNMTest {
 
 		q[3] = new Number(5);
 		q[5] = new Number(5);
-		q[4].setFree(true);
+		move = new MovementNM(3,5);
+		assertTrue(move.isValid(q));
+		
+		
+		q[8] = new Number(9);
+		q[9] = new Number(1);
+		move = new MovementNM(8,9);
 		assertTrue(move.isValid(q));
 	
 	}
