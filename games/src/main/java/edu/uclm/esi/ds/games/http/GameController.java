@@ -26,7 +26,7 @@ public class GameController {
 	@GetMapping("/requestGame")
 	public Match requestGame(@RequestParam String game, @RequestParam String player) {
 		// ...
-		if (checkGame(game))
+		if (!checkGame(game))
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game Not Found");
 
 		if(!checkPlayer(player))
