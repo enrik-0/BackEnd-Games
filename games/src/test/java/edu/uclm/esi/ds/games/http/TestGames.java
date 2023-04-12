@@ -7,7 +7,10 @@ import java.io.UnsupportedEncodingException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,6 +30,7 @@ import edu.uclm.esi.ds.games.entities.User;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
+@TestMethodOrder(OrderAnnotation.class)
 public class TestGames {
 
 	@Autowired
@@ -34,14 +38,14 @@ public class TestGames {
 	@Autowired
 	private UserDAO userDao;
 	
-	@Test
+	@Test @Order(1)
 	void testRedirecc() throws Exception {
 		ResultActions response = 
 				createRequest(GameName.nm.toString(), "Maria");
 		response.andExpect(status().isPermanentRedirect());
 		
 	}
-	@Test
+	@Test @Order(2)
 	void testRequestMatch() throws Exception {
 		createUsers();
 		String payload = sendRequest("Pepe");
@@ -54,12 +58,8 @@ public class TestGames {
 
 	}
 	private ResultActions createRequest(String game, String player) throws Exception {
-		JSONObject jso = new JSONObject();
-		jso.put("game", game);
-		jso.put("player", player);
-		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?")
-				.contentType("application/json")
-				.content(jso.toString());
+		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game="
+				+ game + "&player=" + player);
 		ResultActions response = this.server.perform(request);
 		return response;
 	}
@@ -74,14 +74,9 @@ public class TestGames {
 		return payload;
 	}
 
-	@Test
+	@Test @Order(3)
 	void RejectRequest() throws Exception {
-		JSONObject jso = new JSONObject();
-		jso.put("game", "trivial");
-		jso.put("player", "maria");
-		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?")
-				.contentType("application/json")
-				.content(jso.toString());
+		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game=trivial&player=Pepe");
 		this.server.perform(request).andExpect(status().isNotFound());
 	}
 	private void createUsers() {
