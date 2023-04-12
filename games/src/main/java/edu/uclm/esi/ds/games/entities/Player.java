@@ -1,10 +1,7 @@
 package edu.uclm.esi.ds.games.entities;
 
-public class Player {
-	private String id;
-	private String name;
-	private String email;
-	
+public class Player extends User {
+
 	public Player(String id, String name, String email) {
 		this.id = id;
 		this.name = name;
