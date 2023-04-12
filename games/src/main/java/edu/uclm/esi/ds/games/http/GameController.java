@@ -33,13 +33,14 @@ public class GameController {
 
 	@GetMapping("/requestGame")
 	public Match requestGame(HttpSession session, @RequestParam String game) {
-		String userId = session.getAttribute("userId").toString();
+		String userId;
 		JSONObject userJson;
 
-		if (checkGame(game))
+		if (!checkGame(game))
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game Not Found");
 		
 		try {
+			userId = session.getAttribute("userId").toString();
 			userJson = apiService.getUser(userId);
 			if (userJson == null) throw new Exception();
 		} catch (Exception e) {

@@ -4,13 +4,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import edu.uclm.esi.ds.games.entities.Player;
+
 class MovementNMTest {
 
 	@Test
 	void testIsValid() {
 		Match match = new  NumberMatch();
-		match.addPlayer("qwe");
-		match.addPlayer("qeeww");
+		match.addPlayer(new Player("1234", "Pepe", "pepe@pepe.com"));
+		match.addPlayer(new Player("abcd", "Ana", "ana@ana.com"));
 		match.buildBoards();
 		Board board= match.getBoards().get(0);
 		Number[] q = board.getDigits();
