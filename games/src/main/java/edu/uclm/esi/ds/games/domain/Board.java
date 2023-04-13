@@ -9,7 +9,7 @@ public class Board {
 		SecureRandom dice = new SecureRandom();
 		this.setDigits(new Number[81]);
 		for (int i = 0; i < digits.length/3; i++)
-				this.digits[i] = new Number(dice.nextInt(1, 10));
+			this.digits[i] = new Number(dice.nextInt(1, 10));
 	}
 
 	public Number[] getDigits() {
