@@ -23,9 +23,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import edu.uclm.esi.ds.games.dao.UserDAO;
 import edu.uclm.esi.ds.games.domain.GameName;
-import edu.uclm.esi.ds.games.entities.User;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -35,8 +33,6 @@ public class TestGames {
 
 	@Autowired
 	private MockMvc server;
-	@Autowired
-	private UserDAO userDao;
 	
 	@Test @Order(1)
 	void testRedirecc() throws Exception {
@@ -45,9 +41,9 @@ public class TestGames {
 		response.andExpect(status().isPermanentRedirect());
 		
 	}
+
 	@Test @Order(2)
 	void testRequestMatch() throws Exception {
-		createUsers();
 		String payload = sendRequest("Pepe");
 		JSONObject jsonPepe = new JSONObject(payload);
 		String payloadAna = sendRequest("Ana");
@@ -57,17 +53,15 @@ public class TestGames {
 		assertTrue(jsonAna.getJSONArray("players").length() == 2);
 
 	}
+
 	private ResultActions createRequest(String game, String player) throws Exception {
-		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game="
-				+ game + "&player=" + player);
+		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game=" + game);
 		ResultActions response = this.server.perform(request);
 		return response;
 	}
 
 	private String sendRequest(String player) throws Exception, UnsupportedEncodingException {
-		
-		ResultActions response = 
-				createRequest(GameName.nm.toString(), player);
+		ResultActions response = createRequest(GameName.nm.toString(), player);
 		MvcResult result = response.andExpect(status().isOk()).andReturn();
 		MockHttpServletResponse http = result.getResponse();
 		String payload = http.getContentAsString();
@@ -76,15 +70,7 @@ public class TestGames {
 
 	@Test @Order(3)
 	void RejectRequest() throws Exception {
-		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game=trivial&player=Pepe");
+		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game=trivial");
 		this.server.perform(request).andExpect(status().isNotFound());
-	}
-	private void createUsers() {
-		User user = new User();
-		user.setName("Pepe");
-		this.userDao.save(user);
-		User us = new User();
-		us.setName("Ana");
-		this.userDao.save(us);
 	}
 }

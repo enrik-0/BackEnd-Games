@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import edu.uclm.esi.ds.games.entities.Player;
+
 public class NumberMatch extends Match {
 	public NumberMatch() {
 		this.id = UUID.randomUUID().toString();
@@ -20,7 +22,7 @@ public class NumberMatch extends Match {
 		return this.ready;
 	}
 
-	public List<String> getPlayers() {
+	public List<Player> getPlayers() {
 		return this.players;
 	}
 
@@ -30,7 +32,7 @@ public class NumberMatch extends Match {
 			this.buildBoards();
 	}
 
-	public void addPlayer(String player) {
+	public void addPlayer(Player player) {
 		this.players.add(player);
 		if (this.players.size() == 2)
 			setReady(true);
@@ -38,8 +40,8 @@ public class NumberMatch extends Match {
 
 	protected void buildBoards() {
 		Board board = new Board();
-		this.boards.put(this.players.get(0), board);
-		this.boards.put(this.players.get(1), board.copy());
+		this.boards.put(this.players.get(0).getId(), board);
+		this.boards.put(this.players.get(1).getId(), board.copy());
 	}
 
 	public List<Board> getBoards() {
