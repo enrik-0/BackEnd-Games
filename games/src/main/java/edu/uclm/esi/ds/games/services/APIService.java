@@ -7,6 +7,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ public class APIService {
 		int code = response.getStatusLine().getStatusCode();
 		
 		if (code >= 200 && code < 300) {
-			String payload = response.getEntity().toString();
+			String payload = EntityUtils.toString(response.getEntity());
 			json = new JSONObject(payload);
 		}
 		
