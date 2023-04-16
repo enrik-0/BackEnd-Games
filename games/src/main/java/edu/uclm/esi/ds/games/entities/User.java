@@ -5,8 +5,8 @@ public abstract class User {
 	protected String name;
 	protected String email;
 	
-	abstract String getId();
-	abstract void setId(String id);
-	abstract String getName();
-	abstract void setName(String name);
+	public abstract String getId();
+	public abstract void setId(String id);
+	public abstract String getName();
+	public abstract void setName(String name);
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GameService {
 	private WaitingRoom waitingRoom;
+	// { "idMatch": Match }
 	private ConcurrentHashMap<String, Match> matches;
 
 	public GameService() {
@@ -34,5 +35,9 @@ public class GameService {
 					player.getString("name"),
 					player.getString("email")
 				);
+	}
+
+	public Match getMatch(String idMatch) {
+		return this.matches.get(idMatch);
 	}
 }

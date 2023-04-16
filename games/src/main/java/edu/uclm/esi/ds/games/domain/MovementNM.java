@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class MovementNM implements Movement{
-	
 	private byte[] position = new byte[2];
 	private Method[] methods;
 

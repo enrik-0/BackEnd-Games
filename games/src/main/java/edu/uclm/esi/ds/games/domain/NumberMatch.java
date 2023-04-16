@@ -1,17 +1,20 @@
 package edu.uclm.esi.ds.games.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 import edu.uclm.esi.ds.games.entities.Player;
+import edu.uclm.esi.ds.games.entities.User;
 
 public class NumberMatch extends Match {
 	public NumberMatch() {
 		this.id = UUID.randomUUID().toString();
 		this.players = new LinkedList<>();
 		this.boards = new HashMap<>();
+		this.movements = new HashMap<>();
 	}
 
 	public String getId() {
@@ -22,7 +25,7 @@ public class NumberMatch extends Match {
 		return this.ready;
 	}
 
-	public List<Player> getPlayers() {
+	public List<User> getPlayers() {
 		return this.players;
 	}
 
@@ -32,7 +35,7 @@ public class NumberMatch extends Match {
 			this.buildBoards();
 	}
 
-	public void addPlayer(Player player) {
+	public void addPlayer(User player) {
 		this.players.add(player);
 		if (this.players.size() == 2)
 			setReady(true);
@@ -44,7 +47,34 @@ public class NumberMatch extends Match {
 		this.boards.put(this.players.get(1).getId(), board.copy());
 	}
 
+	public Board getPlayerBoard(String userId) {
+		return this.boards.get(userId);
+	}
+	
 	public List<Board> getBoards() {
 		return this.boards.values().stream().toList();
+	}
+
+	/**
+	 * Checks if user movement is legal and save it if true.
+	 * 
+	 * @param userId ID of the player
+	 * @param i position of first number
+	 * @param j position of second number
+	 * @return true if is valid, false otherwise.
+	 */
+	public boolean isValidMovement(String userId, int i, int j) {
+		Movement move = new MovementNM(i, j);
+		boolean isValid = false;
+
+		if (move.isValid(this.getPlayerBoard(userId).getDigits())) {
+			if (this.movements.get(userId) == null) {
+				this.movements.put(userId, new ArrayList<>());
+			}
+			this.movements.get(userId).add(move);
+			isValid = true;
+		}
+		
+		return isValid;
 	}
 }

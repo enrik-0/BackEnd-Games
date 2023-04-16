@@ -3,20 +3,23 @@ package edu.uclm.esi.ds.games.domain;
 import java.util.HashMap;
 import java.util.List;
 
-import edu.uclm.esi.ds.games.entities.Player;
+import edu.uclm.esi.ds.games.entities.User;
 
 public abstract class Match {
 	protected String id;
 	protected boolean ready;
-	protected List<Player> players;
+	protected List<User> players;
 	// { "player_id": "board" }
 	protected HashMap<String, Board> boards;
+	// { "player_id": Movements }
+	protected HashMap<String, List<Movement>> movements;
 	
 	
-	abstract public String getId();
-	abstract public List<Player> getPlayers();
-	abstract public List<Board> getBoards();
-	abstract public boolean isReady();
-	abstract public void addPlayer(Player player);
-	abstract protected void buildBoards();
+	public abstract String getId();
+	public abstract List<User> getPlayers();
+	public abstract List<Board> getBoards();
+	public abstract boolean isReady();
+	public abstract void addPlayer(User player);
+	protected abstract void buildBoards();
+	public abstract boolean isValidMovement(String userId, int i, int j);
 }
