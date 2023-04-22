@@ -1,268 +1,240 @@
 package edu.uclm.esi.ds.games.domain;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class MovementNM implements Movement{
 	
 	private byte[] position = new byte[2];
+	private Method[] methods;
 
-	public MovementNM(int i, int j) {
+	public MovementNM(int i, int j){
 		//the lowest position at the 0 
 		position[0] = (byte) (i >= j? j : i);
 		position[1] = (byte) (j <= i? i : j);
+		methods = createFunctions();
 	}
-	
-	public  boolean isValid(Number[] board) {
+
+	public  boolean isValid(Number[] board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
 		return validate(board);
 	}
 
-	private boolean validate(Number[] board) {
+	
+	private boolean validPosition(Number[] board) {
+
+		boolean valid = false;
+		
+		if (sameNumber(board) || addUpTen(board))
+			valid = true;
+		
+		return valid;
+	}
+	
+	private boolean sameNumber(Number[] board) {
+
+		return board[position[0]].getNumber() == board[position[1]].getNumber();
+	}
+	
+	private boolean addUpTen(Number[] board) {
+
+		return (board[position[0]].getNumber() +
+				board[position[1]].getNumber()) == 10;
+	}
+
+	private boolean validate(Number[] board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
+		byte lengthH = 9;
+		byte lengthV = (byte) (board.length / lengthH);
 		ArrayList<Byte> all = new ArrayList<Byte>();
-		ArrayList<Byte> unique;
 		boolean valid = true;
 		if(!validPosition(board)) {
 			valid = false;
 		} else {
-			all.addAll(calcDiagonals(board));
-			all.addAll(calcHorizontal(board));
-			all.addAll(calcVertical(board));
-			HashSet<Byte> noDuplicated = new HashSet<Byte>(all);
-			unique = new ArrayList<Byte>(noDuplicated);
-			if (!unique.contains(position[1]))
+
+			//diagonal Up left
+			all.addAll(this.launcher(this, methods[0], board, position[0], lengthH));
+			//vertical up
+			all.addAll(this.launcher(this, methods[1], board, position[0], lengthH));
+			//diagonal Up right
+			all.addAll(this.launcher(this, methods[2], board, position[0], lengthH));
+			//horizontal right
+			all.addAll(this.launcher(this, methods[3], board, position[0], lengthH));
+			//diagonal down right
+			all.addAll(this.launcher(this, methods[4], board, position[0], lengthH));
+			//vertical down
+			all.addAll(this.launcher(this, methods[5], board, position[0], lengthH, lengthV));
+			//diagonal down left
+			all.addAll(this.launcher(this, methods[6], board, position[0], lengthH));
+			//horizontal left
+			all.addAll(this.launcher(this, methods[7], board, position[0]));
+
+			if (!all.contains(position[1]))
 				valid = false;
 		}
 
 		return valid;
 	}
-	private boolean validPosition(Number[] board) {
-		boolean valid = false;
 
-		if (sameNumber(board) || addUpTen(board))
-			valid = true;
 
-		return valid;
-	}
-	
-	private boolean sameNumber(Number[] board) {
-		return board[position[0]].getNumber() == board[position[1]].getNumber();
-	}
+	public byte calcHorizontalR(byte start, byte length){
 
-	private boolean addUpTen(Number[] board) {
-		return (board[position[0]].getNumber() +
-				board[position[1]].getNumber()) == 10;
-	}
-
-	private ArrayList<Byte> calcHorizontal(Number[] board) {
-		ArrayList<Byte> numbers = new ArrayList<Byte>();
-		byte lengthH = 9;
-		byte  length = (byte) (lengthH * board.length/lengthH);
-		boolean next = true;
-		byte current = position[0];
-		do {
-			current = calcHorizontalR(current, length);
-			if (current < 0)
-				next = false;
-			else
-				if(!board[current].isFree()) {
-					next = false;
-					numbers.add(current);
-			}
-		}while(next);
-		
-		next = true;
-		current = position[0];
-		do {
-			current = calcHorizontalL(current);
-			if (current < 0)
-				next = false;
-			else
-				if(!board[current].isFree()) {
-					next = false;
-					numbers.add(current);
-			}
-		}while(next);
-
-		return numbers;
-	}
-	
-	private ArrayList<Byte> calcVertical(Number[] board) {
-		ArrayList<Byte> numbers = new ArrayList<Byte>();
-		boolean next = true;
-		byte lengthH = 9;
-		byte lengthV = (byte) (board.length / lengthH);
-		byte current = position[0];
-		byte counter = 1;
-		do {
-			current = calcVerticalUp(current, lengthH, counter);
-			if (current < 0)
-				next = false;
-			else
-				if (!board[current].isFree()) {
-					next = false;
-					numbers.add(current);
-			}
-
-			counter++;
-
-		}while(next);
-
-		next = true;
-		counter = 1;
-		current = position[0];
-		
-		do {
-			current = calcVerticalDown(current, lengthH, lengthV, counter);
-			if(current < 0)
-				next = false;
-			else
-				if(!board[current].isFree()) {
-					next = false;
-					numbers.add(current);
-			}
-			counter++;
-			
-		}while(next);
-
-		return numbers;
-	}
-
-	private  byte calcHorizontalR(byte start, byte length){
 		byte result = (byte) (start + 1);
+
 		if  (result > length)
 			result = -1;
+
 		return result;
 	}
 
-	private byte calcHorizontalL(byte start) {
+	public byte calcHorizontalL(byte start) {
+
 		return (byte) (start - 1);
 	}
 
-	private byte calcVerticalUp(byte start, byte  lengthH, byte k) {
+	public byte calcVerticalUp(byte start, byte  lengthH, byte k) {
+
 		return (byte) (start - lengthH * k);
 	}
-	
-	private byte  calcVerticalDown(byte start, byte lengthH, byte lengthV, byte k) {
-		byte result;
-		int i = start - (start % lengthH ) * k;
 
-		if (i >= lengthV) {
+	public byte  calcVerticalDown(byte start, byte lengthH, byte lengthV, byte k) {
+
+		byte result;
+		byte i =(byte) (start - (start % lengthH ) * k);
+
+		if (i >= lengthV)
 			result = -1;
-		} else {
+		else
 			result = (byte) (start + lengthH * k);
-		}
 
 		return result;
 	}
 	
-	private byte calcDiagonalLDown(byte start, byte lengthH) {
+	public byte calcDiagonalLDown(byte start, byte lengthH) {
+
 		byte result;
 
-		if (start % lengthH ==  0) {
+		if (start % lengthH ==  0)
 			result = -1;
-		} else {
+		else
 			result = (byte) (start + lengthH - 1);
-		}
 
 		return result;
 	}
 	
-	private byte calcDiagonalLUp(byte start, byte lengthH) {
+	public byte calcDiagonalLUp(byte start, byte lengthH) {
+
 		byte result;
 
-		if(start % lengthH == 0) {
+		if(start % lengthH == 0)
 			result = -1;
-		} else {
+		else
 			result = (byte) (start - lengthH - 1);
-		}
 
 		return result;
 	}
 	
-	private byte calcDiagonalRDown(byte start, byte lengthH) {
+	public byte calcDiagonalRDown(byte start, byte lengthH) {
+
 		byte result;
 
-		if(start % lengthH == lengthH - 1) {
+		if(start % lengthH == lengthH - 1)
 			result = -1;
-		} else {
+		else
 			result = (byte) (start + lengthH + 1);
-		}
 
 		return result;
 	}
 	
-	private byte calcDiagonalRUp(byte start, byte lengthH) {
+	public byte calcDiagonalRUp(byte start, byte lengthH) {
+
 		byte result;
 
-		if (start % lengthH == lengthH - 1) {
+		if (start % lengthH == lengthH - 1)
 			result = -1;
-		} else {
+		else
 			result = (byte) (start - lengthH + 1);
-		}
 
 		return result;
 	}
 	
-	private ArrayList<Byte> calcDiagonals(Number[] board) {
-		ArrayList<Byte> numbers = new ArrayList<Byte>();
-		Byte lengthH = 9;
+
+	private ArrayList<Byte> launcher(Object object, Method method,Number[] board, byte... w) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+
+		//vertical need a counter so we check if the method is vertical
+		boolean isVertical = method.getName().toLowerCase().contains("vertical");
 		boolean next = true;
-		byte current = position[0];
-		do {
-			current = calcDiagonalLUp(current, lengthH);
-			if (current < 0)
-				next = false;
-			else
-				if (!board[current].isFree()) {
-					next = false;
-					numbers.add(current);
-				}
-			
-		}while(next);
+		byte current = w[0];
+		ArrayList<Byte> positions = new ArrayList<Byte>();
 		
-		next = true;
-		current = position[0];
+		// the parameters for the method
+		Object[] parameters;
+
+		if(isVertical) {
+			parameters = new Object[w.length + 1];
+			parameters[w.length] = Byte.parseByte("0");
+		}
+		else
+			parameters = new Object[w.length];
+
+		for (int i = 0; i < w.length; i++)
+			parameters[i] = w[i];
+
+
 		do {
-			current = calcDiagonalLDown(current, lengthH);
+
+			current = (byte) method.invoke(object, parameters);
+
 			if (current < 0)
 				next = false;
 			else
 				if (!board[current].isFree()) {
 					next = false;
-					numbers.add(current);
+					positions.add(current);
 				}
-			
-		}while(next);
 
-		next = true;
-		current = position[0];
-		do {
-			current = calcDiagonalRUp(current, lengthH);
-			if (current < 0)
-				next = false;
-			else
-				if (!board[current].isFree()) {
-					next = false;
-					numbers.add(current);
-				}
-			
-		}while(next);
+			parameters[0] = current;
 
-		next = true;
-		current = position[0];
-		do {
-			current = calcDiagonalRDown(current, lengthH);
-			if (current < 0)
-				next = false;
-			else
-				if (!board[current].isFree()) {
-					next = false;
-					numbers.add(current);
-				}
-			
-		}while(next);
+			if (isVertical)
+				parameters[w.length] = (byte) parameters[w.length] + 1;
+					
 
-		return numbers;
+		}while(next);
+		return positions;
+	}
+
+	private Method[] createFunctions() {
+		Method[] methods = new Method[8];
+		try{
+			
+			//diagonal up left
+			methods[0] = createFunction("calcDiagonalLUp",2);
+			//vertical up
+			methods[1] = createFunction("calcVerticalUp", 3);
+			//diagonal  up right
+			methods[2] = createFunction("calcDiagonalRUp", 2);
+			//horizontal right
+			methods[3] = createFunction("calcHorizontalR",2);
+			//diagonal down right
+			methods[4] = createFunction("calcDiagonalRDown", 2);
+			//vertical down
+			methods[5] = createFunction("calcVerticalDown", 4);
+			//diagonal down left
+			methods[6] = createFunction("calcDiagonalLDown",2);
+			//horizontal left
+			methods[7] = createFunction("calcHorizontalL",1);
+		}catch(NoSuchMethodException | SecurityException e) {}
+		return methods;
+	}
+
+	private Method createFunction(String methodName, int elements) throws NoSuchMethodException, SecurityException {
+
+		Class[] classes = new Class[elements];
+		for (int i = 0; i < classes.length; i++)
+			classes[i] = byte.class;
+		Method method = MovementNM.class.getMethod(methodName, classes);
+		
+		return method;
 	}
 }
-
