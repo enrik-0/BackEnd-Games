@@ -14,15 +14,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class APIService {
 	private final String baseURL;
-	private CloseableHttpClient http;
 	
 	public APIService() {
 		this.baseURL = "http://localhost:8080/api/";
-		this.http = HttpClientBuilder.create().build();
 	}
 	
 	/**
 	 * Make an HTTP GET request to the /getUser service of the Accounts API.
+	 * 
 	 * @param id: ID of the user.
 	 * @return user json or null if user don't exists.
 	 * JSON format is { "id": "...", "name": "...", "email": "..." }
@@ -32,16 +31,18 @@ public class APIService {
 	public JSONObject getUser(String id) throws ClientProtocolException, IOException {
 		JSONObject json = null;
 
-		HttpGet request = new HttpGet(this.baseURL + "getUser?cookie=" + id);
-		CloseableHttpResponse response = this.http.execute(request);
-		int code = response.getStatusLine().getStatusCode();
+		try (CloseableHttpClient http = HttpClientBuilder.create().build()) {
+			HttpGet request = new HttpGet(this.baseURL + "getUser?id=" + id);
+			CloseableHttpResponse response = http.execute(request);
+			int code = response.getStatusLine().getStatusCode();
 		
-		if (code >= 200 && code < 300) {
-			String payload = EntityUtils.toString(response.getEntity());
-			json = new JSONObject(payload);
+			if (code >= 200 && code < 300) {
+				String payload = EntityUtils.toString(response.getEntity());
+				json = new JSONObject(payload);
+			}
+
+			response.close();
 		}
-		
-		response.close();
 		
 		return json;
 	}
