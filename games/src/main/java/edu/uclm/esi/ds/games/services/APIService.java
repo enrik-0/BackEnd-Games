@@ -28,11 +28,11 @@ public class APIService {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public JSONObject getUser(String id) throws ClientProtocolException, IOException {
+	public JSONObject getUser(String sessionID) throws ClientProtocolException, IOException {
 		JSONObject json = null;
 
 		try (CloseableHttpClient http = HttpClientBuilder.create().build()) {
-			HttpGet request = new HttpGet(this.baseURL + "getUser?id=" + id);
+			HttpGet request = new HttpGet(this.baseURL + "getUser?sessionID=" + sessionID);
 			CloseableHttpResponse response = http.execute(request);
 			int code = response.getStatusLine().getStatusCode();
 		
