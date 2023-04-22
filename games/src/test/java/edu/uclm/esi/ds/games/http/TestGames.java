@@ -6,11 +6,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.UnsupportedEncodingException;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -50,10 +53,13 @@ public class TestGames {
 	@Test @Order(2)
 	void testRequestMatch() throws Exception {
 		register("Pepe");
-		String payload = sendRequest("67ca9316-576e-4b90-af5e-911723d3baba");
+		String sessionId = login("Pepe");
+		String payload = sendRequest(sessionId);
 		JSONObject jsonPepe = new JSONObject(payload);
+
 		register("Ana");
-		String payloadAna = sendRequest("1adcae44-5f5c-4560-bdf3-44bb9e690180");
+		sessionId = login("Ana");
+		String payloadAna = sendRequest(sessionId);
 		assertFalse(jsonPepe.getBoolean("ready"));
 		JSONObject jsonAna = new JSONObject(payloadAna);
 		assertTrue(jsonAna.getBoolean("ready"));
@@ -61,9 +67,29 @@ public class TestGames {
 
 	}
 
+	private String login(String player) throws JSONException {
+		JSONObject jso = new JSONObject();
+		jso.put("name",player);
+		jso.put("pwd",player);
+		String sessionId = null;
+		
+		HttpClient httpClient = HttpClientBuilder.create().build();
+		try {
+		    HttpPut request = new HttpPut("http://localhost:8080/users/login");
+		    StringEntity params = new StringEntity(jso.toString());
+		    request.addHeader("content-type", "application/json");
+		    request.setEntity(params);
+		    HttpResponse response = httpClient.execute(request);
+		    Header[] w=response.getHeaders("sessionId");
+		    sessionId = w[0].getValue();
+		} catch (Exception ex) {
+		}
+		return sessionId;
+	}
+
 	private ResultActions createRequest(String game, String player) throws Exception {
 		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game=" + game)
-				.sessionAttr("userId", player);
+				.sessionAttr("sessionId", player);
 		ResultActions response = this.server.perform(request);
 		return response;
 	}

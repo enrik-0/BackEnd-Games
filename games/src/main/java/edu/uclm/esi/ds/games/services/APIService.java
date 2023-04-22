@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class APIService {
-	private String baseURL;
+	private final String baseURL;
 	private CloseableHttpClient http;
 	
 	public APIService() {
@@ -32,7 +32,7 @@ public class APIService {
 	public JSONObject getUser(String id) throws ClientProtocolException, IOException {
 		JSONObject json = null;
 
-		HttpGet request = new HttpGet(this.baseURL + "getUser?id=" + id);
+		HttpGet request = new HttpGet(this.baseURL + "getUser?cookie=" + id);
 		CloseableHttpResponse response = this.http.execute(request);
 		int code = response.getStatusLine().getStatusCode();
 		
