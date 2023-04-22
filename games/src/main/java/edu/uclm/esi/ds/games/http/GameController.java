@@ -1,11 +1,5 @@
 package edu.uclm.esi.ds.games.http;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,7 +34,7 @@ public class GameController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game Not Found");
 		
 		try {
-			userId = session.getAttribute("userId").toString();
+			userId = session.getAttribute("sessionId").toString();
 			userJson = apiService.getUser(userId);
 			if (userJson == null) throw new Exception();
 		} catch (Exception e) {
