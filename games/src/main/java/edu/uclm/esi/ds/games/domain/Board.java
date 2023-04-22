@@ -1,5 +1,6 @@
 package edu.uclm.esi.ds.games.domain;
 
+import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
 
 public class Board {
@@ -22,7 +23,7 @@ public class Board {
 		return board;
 	}
 
-	public void updateBoard(int first, int second) {
+	public void updateBoard(int first, int second) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Movement move = new MovementNM(first, second);
 		if(move.isValid(digits)) {
 			digits[first].setFree(true);

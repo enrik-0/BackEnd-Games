@@ -41,12 +41,13 @@ public class GameController {
 		
 		try {
 			userId = session.getAttribute("userId").toString();
+			for (int i = 0; i< 10000;i++)
+			System.out.println(userId);
 			userJson = apiService.getUser(userId);
 			if (userJson == null) throw new Exception();
 		} catch (Exception e) {
 			throw new ResponseStatusException(HttpStatus.PERMANENT_REDIRECT, "Go to login page");
 		}
-
 		return this.gameService.requestGame(game, userJson);
 	}
 	
