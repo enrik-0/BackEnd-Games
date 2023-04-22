@@ -1,5 +1,7 @@
 package edu.uclm.esi.ds.games.http;
 
+import java.io.IOException;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import edu.uclm.esi.ds.games.domain.GameName;
 import edu.uclm.esi.ds.games.domain.Match;
+import edu.uclm.esi.ds.games.exceptions.NotLoggedException;
 import edu.uclm.esi.ds.games.services.APIService;
 import edu.uclm.esi.ds.games.services.GameService;
 import jakarta.servlet.http.HttpSession;
@@ -36,8 +39,8 @@ public class GameController {
 		try {
 			userId = session.getAttribute("sessionId").toString();
 			userJson = apiService.getUser(userId);
-			if (userJson == null) throw new Exception();
-		} catch (Exception e) {
+			if (userJson == null) throw new NotLoggedException();
+		} catch (IOException | NotLoggedException e) {
 			throw new ResponseStatusException(HttpStatus.PERMANENT_REDIRECT, "Go to login page");
 		}
 

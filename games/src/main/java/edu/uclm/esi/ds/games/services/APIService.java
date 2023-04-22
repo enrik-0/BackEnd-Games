@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class APIService {
-	private String baseURL;
+	private final String baseURL;
 	private CloseableHttpClient http;
 	
 	public APIService() {
