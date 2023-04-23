@@ -30,17 +30,15 @@ public class GameController {
 
 	@GetMapping("/requestGame")
 	public Match requestGame(HttpSession session, @RequestParam String game) {
-		String userId;
+		String sessionId;
 		JSONObject userJson;
 
 		if (!checkGame(game))
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game Not Found");
 		
 		try {
-			userId = session.getAttribute("userId").toString();
-			for (int i = 0; i< 10000;i++)
-			System.out.println(userId);
-			userJson = apiService.getUser(userId);
+			sessionId = session.getAttribute("sessionId").toString();
+			userJson = apiService.getUser(sessionId);
 			if (userJson == null) throw new NotLoggedException();
 		} catch (IOException | NotLoggedException e) {
 			throw new ResponseStatusException(HttpStatus.PERMANENT_REDIRECT, "Go to login page");
