@@ -16,10 +16,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import edu.uclm.esi.ds.games.domain.GameName;
 import edu.uclm.esi.ds.games.domain.Match;
-import edu.uclm.esi.ds.games.exceptions.NotLoggedException;
 import edu.uclm.esi.ds.games.services.APIService;
 import edu.uclm.esi.ds.games.services.GameService;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("games")
@@ -31,18 +31,23 @@ public class GameController {
 	private APIService apiService;
 
 	@GetMapping("/requestGame")
-	public Match requestGame(@RequestHeader(value="sessionId") String sessionId, @RequestParam String game) {
+	public Match requestGame(HttpServletRequest request, HttpServletResponse response, @RequestParam String game) {
+		String sessionID = request.getHeader("sessionID");
 		JSONObject userJson;
 
 		if (!checkGame(game))
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game Not Found");
 		
 		try {
-			userJson = apiService.getUser(sessionId);
-			if (userJson == null) throw new NotLoggedException();
-		} catch (IOException | NotLoggedException e) {
-			throw new ResponseStatusException(HttpStatus.PERMANENT_REDIRECT, "Go to login page");
+			userJson = apiService.getUser(sessionID);
+			if (userJson == null) {
+				response.sendRedirect("http://localhost:4200");
+				return null;
+			}
+		} catch (IOException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not logged");r
 		}
+
 		return this.gameService.requestGame(game, userJson);
 	}
 	

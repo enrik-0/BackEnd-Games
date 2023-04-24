@@ -54,7 +54,7 @@ class MovementNMTest {
 		assertTrue(q[4].isFree());
 
 		/*
-		 * NOW this positions are legal coz 4 is free
+		 * NOW this positions are legal because 4 is free
 		 * values are legal
 		 * result: true
 		 */

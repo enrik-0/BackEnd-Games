@@ -23,7 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -45,61 +44,29 @@ public class TestGames {
 	@Test @Order(1)
 	void testRedirecc() throws Exception {
 		ResultActions response = 
-				createRequest(GameName.nm.toString(), "Maria");
-		response.andExpect(status().isPermanentRedirect());
-		
+				sendGameRequest(GameName.nm.toString(), "1234");
+
+		response.andExpect(status().isFound());
 	}
 
 	@Test @Order(2)
 	void testRequestMatch() throws Exception {
 		register("Pepe");
-		String sessionId = login("Pepe");
-		String payload = sendRequest(sessionId);
+		String sessionID = login("Pepe");
+		String payload = getResponseGameRequest(sessionID);
 		JSONObject jsonPepe = new JSONObject(payload);
+		System.out.println(jsonPepe.toString());
 
 		register("Ana");
-		sessionId = login("Ana");
-		String payloadAna = sendRequest(sessionId);
-		assertFalse(jsonPepe.getBoolean("ready"));
+		sessionID = login("Ana");
+		String payloadAna = getResponseGameRequest(sessionID);
 		JSONObject jsonAna = new JSONObject(payloadAna);
+		System.out.println(jsonAna.toString());
+
+		assertFalse(jsonPepe.getBoolean("ready"));
 		assertTrue(jsonAna.getBoolean("ready"));
 		assertTrue(jsonAna.getJSONArray("players").length() == 2);
 
-	}
-
-	private String login(String player) throws JSONException {
-		JSONObject jso = new JSONObject();
-		jso.put("name",player);
-		jso.put("pwd",player);
-		String sessionId = null;
-		
-		HttpClient httpClient = HttpClientBuilder.create().build();
-		try {
-		    HttpPut request = new HttpPut("http://localhost:8080/users/login");
-		    StringEntity params = new StringEntity(jso.toString());
-		    request.addHeader("content-type", "application/json");
-		    request.setEntity(params);
-		    HttpResponse response = httpClient.execute(request);
-		    Header[] w=response.getHeaders("sessionId");
-		    sessionId = w[0].getValue();
-		} catch (Exception ex) {
-		}
-		return sessionId;
-	}
-
-	private ResultActions createRequest(String game, String player) throws Exception {
-		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game=" + game)
-				.sessionAttr("sessionId", player);
-		ResultActions response = this.server.perform(request);
-		return response;
-	}
-
-	private String sendRequest(String player) throws Exception, UnsupportedEncodingException {
-		ResultActions response = createRequest(GameName.nm.toString(), player);
-		MvcResult result = response.andExpect(status().isOk()).andReturn();
-		MockHttpServletResponse http = result.getResponse();
-		String payload = http.getContentAsString();
-		return payload;
 	}
 
 	@Test @Order(3)
@@ -107,21 +74,60 @@ public class TestGames {
 		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game=trivial");
 		this.server.perform(request).andExpect(status().isNotFound());
 	}
-	private void register(String player) throws Exception {
+
+	private String login(String player) throws JSONException {
+		String sessionID = null;
 		JSONObject jso = new JSONObject();
-		jso.put("name",player);
-		jso.put("email", player);
-		jso.put("pwd1",player);
-		jso.put("pwd2",player);
+		jso.put("name", player);
+		jso.put("pwd", org.apache.commons.codec.digest.DigestUtils.sha512Hex(player));
 		
 		HttpClient httpClient = HttpClientBuilder.create().build();
 		try {
-		    HttpPost request = new HttpPost("http://localhost:8080/users/register");
+		    HttpPut request = new HttpPut("http://localhost:8080/users/login");
+
 		    StringEntity params = new StringEntity(jso.toString());
 		    request.addHeader("content-type", "application/json");
 		    request.setEntity(params);
+
 		    HttpResponse response = httpClient.execute(request);
+		    Header headerSessionID = response.getFirstHeader("sessionID");
+		    sessionID = headerSessionID.getValue();
 		} catch (Exception ex) {
 		}
+
+		return sessionID;
+	}
+
+	private ResultActions sendGameRequest(String game, String sessionID) throws Exception {
+		RequestBuilder request = MockMvcRequestBuilders.get("/games/requestGame?game=" + game)
+				.header("sessionID", sessionID);
+		ResultActions response = this.server.perform(request);
+
+		return response;
+	}
+
+	private String getResponseGameRequest(String sessionID) throws Exception, UnsupportedEncodingException {
+		ResultActions response = sendGameRequest(GameName.nm.toString(), sessionID);
+		MvcResult result = response.andExpect(status().isOk()).andReturn();
+		MockHttpServletResponse http = result.getResponse();
+		String payload = http.getContentAsString();
+
+		return payload;
+	}
+
+	private void register(String player) throws Exception {
+		JSONObject jso = new JSONObject();
+		jso.put("name", player);
+		jso.put("email", player);
+		jso.put("pwd1", player);
+		jso.put("pwd2", player);
+		
+		HttpClient httpClient = HttpClientBuilder.create().build();
+
+		HttpPost request = new HttpPost("http://localhost:8080/users/register");
+		StringEntity params = new StringEntity(jso.toString());
+		request.addHeader("content-type", "application/json");
+		request.setEntity(params);
+		httpClient.execute(request);
 	}
 }
