@@ -45,7 +45,7 @@ public class GameController {
 				return null;
 			}
 		} catch (IOException e) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not logged");r
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not logged");
 		}
 
 		return this.gameService.requestGame(game, userJson);
