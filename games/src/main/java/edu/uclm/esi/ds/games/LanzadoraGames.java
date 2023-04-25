@@ -4,8 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 
-import edu.uclm.esi.ds.games.domain.GameName;
-
 @SpringBootApplication
 @ServletComponentScan
 public class LanzadoraGames {

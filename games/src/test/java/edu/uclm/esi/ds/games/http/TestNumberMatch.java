@@ -36,8 +36,7 @@ import edu.uclm.esi.ds.games.domain.GameName;
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @TestMethodOrder(OrderAnnotation.class)
-public class TestGames {
-
+public class TestNumberMatch {
 	@Autowired
 	private MockMvc server;
 	
@@ -126,7 +125,7 @@ public class TestGames {
 
 		HttpPost request = new HttpPost("http://localhost:8080/users/register");
 		StringEntity params = new StringEntity(jso.toString());
-		request.addHeader("content-type", "application/json");
+		request.addHeader("Content-type", "application/json");
 		request.setEntity(params);
 		httpClient.execute(request);
 	}

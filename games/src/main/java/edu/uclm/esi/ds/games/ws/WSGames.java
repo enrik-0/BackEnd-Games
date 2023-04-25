@@ -2,7 +2,6 @@ package edu.uclm.esi.ds.games.ws;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,12 +15,16 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import edu.uclm.esi.ds.games.domain.Match;
+import edu.uclm.esi.ds.games.entities.User;
+import edu.uclm.esi.ds.games.services.APIService;
 import edu.uclm.esi.ds.games.services.GameService;
 
 @Component
 public class WSGames extends TextWebSocketHandler {
 	@Autowired
 	private GameService gameService;
+	@Autowired
+	private APIService apiService;
 	private ArrayList<WebSocketSession> sessions = new ArrayList<>();
 
 	@Override
@@ -50,8 +53,7 @@ public class WSGames extends TextWebSocketHandler {
 				this.chat(jso);
 			} else if (type.equals("BROADCAST")) {
 				this.broadcast(jso);
-			}
-			else {
+			} else {
 				this.send(session,"type","ERROR","message","Unknown message");
 			}
 		} catch (JSONException e) {
@@ -59,7 +61,7 @@ public class WSGames extends TextWebSocketHandler {
 		}
 	}	
 
-	private void send(WebSocketSession session, String... tv) {
+	private void send(WebSocketSession session, String... tv) throws JSONException {
 		JSONObject jso = new JSONObject();
 		for (int i = 0; i < tv.length; i += 2)
 			jso.put(tv[i], tv[i + 1]);
@@ -73,12 +75,12 @@ public class WSGames extends TextWebSocketHandler {
 		}
 	}
 
-	private void move(JSONObject jso) throws JSONException {
+	private void move(JSONObject jso) throws Exception {
 		String idMatch = jso.getString("idMatch");
-		String userId = jso.getString("userId");
+		String sessionID = jso.getString("sessionID");
 		JSONArray move = jso.getJSONArray("movement");
 
-		if (this.checkMovement(idMatch, userId, move)) {
+		if (this.checkMovement(idMatch, sessionID, move)) {
 			// updateBoard()
 			// sendUpdate()
 		} else {
@@ -86,12 +88,14 @@ public class WSGames extends TextWebSocketHandler {
 		}
 	}
 
-	private boolean checkMovement(String idMatch, String userId, JSONArray move) {
+	private boolean checkMovement(String idMatch, String sessionID, JSONArray move) throws Exception, JSONException {
 		boolean valid = false;
 		Match match = this.gameService.getMatch(idMatch);
 
 		if (match != null) {
-			if (!match.isValidMovement(userId, (int) move.get(0), (int) move.get(1))) {
+			JSONObject userJson = this.apiService.getUser(sessionID);
+			if (!match.isValidMovement(userJson.getString("id"),
+					(int) move.get(0), (int) move.get(1))) {
 				valid = true;
 			}
 		}
@@ -129,7 +133,7 @@ public class WSGames extends TextWebSocketHandler {
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 	}
 
-	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws JSONException {
 		this.sessions.remove(session);
 		JSONObject jso = new JSONObject();
 		jso.put("type", "BYE");
