@@ -1,5 +1,6 @@
 package edu.uclm.esi.ds.games.domain;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -62,8 +63,13 @@ public class NumberMatch extends Match {
 	 * @param i position of first number
 	 * @param j position of second number
 	 * @return true if is valid, false otherwise.
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
 	 */
-	public boolean isValidMovement(String userId, int i, int j) {
+	public boolean isValidMovement(String userId, int i, int j) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Movement move = new MovementNM(i, j);
 		boolean isValid = false;
 

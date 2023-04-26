@@ -41,7 +41,7 @@ public class GameController {
 		try {
 			userJson = apiService.getUser(sessionID);
 			if (userJson == null) {
-				response.sendRedirect("http://localhost:4200");
+				response.setStatus(401);
 				return null;
 			}
 		} catch (IOException e) {

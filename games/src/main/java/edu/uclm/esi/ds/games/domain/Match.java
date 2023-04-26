@@ -1,5 +1,6 @@
 package edu.uclm.esi.ds.games.domain;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,5 +22,5 @@ public abstract class Match {
 	public abstract boolean isReady();
 	public abstract void addPlayer(User player);
 	protected abstract void buildBoards();
-	public abstract boolean isValidMovement(String userId, int i, int j);
+	public abstract boolean isValidMovement(String userId, int i, int j) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 }

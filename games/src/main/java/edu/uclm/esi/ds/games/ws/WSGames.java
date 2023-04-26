@@ -6,26 +6,27 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
 import edu.uclm.esi.ds.games.domain.Match;
-import edu.uclm.esi.ds.games.entities.User;
 import edu.uclm.esi.ds.games.services.APIService;
 import edu.uclm.esi.ds.games.services.GameService;
 
 @Component
 public class WSGames extends TextWebSocketHandler {
-	@Autowired
+
 	private GameService gameService;
-	@Autowired
 	private APIService apiService;
 	private ArrayList<WebSocketSession> sessions = new ArrayList<>();
+
+	public WSGames(GameService games, APIService api) {
+		gameService = games;
+		apiService = api;
+	}
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -49,6 +50,8 @@ public class WSGames extends TextWebSocketHandler {
 				if (match != null) {
 					this.send(session, "type", "MATCH STARTED", "idMatch", idMatch);
 				}
+				else
+					this.send(session, "type","ERROR","message","algo");
 			} else if (type.equals("CHAT")) {
 				this.chat(jso);
 			} else if (type.equals("BROADCAST")) {
