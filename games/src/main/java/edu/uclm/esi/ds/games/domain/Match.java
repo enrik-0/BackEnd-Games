@@ -23,4 +23,5 @@ public abstract class Match {
 	public abstract void addPlayer(User player);
 	protected abstract void buildBoards();
 	public abstract boolean isValidMovement(String userId, int i, int j) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+	public abstract boolean updateUserBoard(String userId, int i, int j);
 }

@@ -14,7 +14,6 @@ import edu.uclm.esi.ds.games.services.GameService;
 @Configuration
 @EnableWebSocket
 public class WSConfigurer implements WebSocketConfigurer {
-	
 	@Autowired
 	private GameService gameService;
 	@Autowired

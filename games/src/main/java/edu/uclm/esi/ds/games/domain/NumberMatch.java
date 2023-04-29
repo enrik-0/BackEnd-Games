@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import edu.uclm.esi.ds.games.entities.Player;
 import edu.uclm.esi.ds.games.entities.User;
 
 public class NumberMatch extends Match {
@@ -82,5 +81,27 @@ public class NumberMatch extends Match {
 		}
 		
 		return isValid;
+	}
+
+	/**
+	 * Updates the board of a user given the two positions of the numbers.
+	 * 
+	 * @param userId: Identifier of the player
+	 * @param i: position of the first number
+	 * @param j: position of the second number
+	 * 
+	 * @return If update is succesful true, otherwise false.
+	 */
+	@Override
+	public boolean updateUserBoard(String userId, int i, int j) {
+		Board board = this.boards.get(userId);
+		boolean success = false;
+
+		if (board != null) {
+			board.updateBoard(i, j);
+			success = true;
+		}
+		
+		return success;
 	}
 }

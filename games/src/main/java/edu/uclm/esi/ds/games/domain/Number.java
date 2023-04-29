@@ -9,6 +9,11 @@ public class Number {
 		this.free = false;
 	}
 
+	public Number(int i, boolean free) {
+		this.number = (byte) i;
+		this.free = free;
+	}
+
 	public byte getNumber() {
 		return number;
 	}
@@ -19,5 +24,9 @@ public class Number {
 
 	public void setFree(boolean free) {
 		this.free = free;
+	}
+	
+	public Number copy() {
+		return new Number(this.number, this.free);
 	}
 }

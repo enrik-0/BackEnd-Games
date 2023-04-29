@@ -18,14 +18,13 @@ import edu.uclm.esi.ds.games.services.GameService;
 
 @Component
 public class WSGames extends TextWebSocketHandler {
-
 	private GameService gameService;
 	private APIService apiService;
 	private ArrayList<WebSocketSession> sessions = new ArrayList<>();
 
 	public WSGames(GameService games, APIService api) {
-		gameService = games;
-		apiService = api;
+		this.gameService = games;
+		this.apiService = api;
 	}
 
 	@Override
@@ -50,8 +49,6 @@ public class WSGames extends TextWebSocketHandler {
 				if (match != null) {
 					this.send(session, "type", "MATCH STARTED", "idMatch", idMatch);
 				}
-				else
-					this.send(session, "type","ERROR","message","algo");
 			} else if (type.equals("CHAT")) {
 				this.chat(jso);
 			} else if (type.equals("BROADCAST")) {
@@ -82,28 +79,48 @@ public class WSGames extends TextWebSocketHandler {
 		String idMatch = jso.getString("idMatch");
 		String sessionID = jso.getString("sessionID");
 		JSONArray move = jso.getJSONArray("movement");
+		Match match = this.gameService.getMatch(idMatch);
+		JSONObject userJson = this.getUser(sessionID);
 
-		if (this.checkMovement(idMatch, sessionID, move)) {
-			// updateBoard()
-			// sendUpdate()
-		} else {
-			// error movement not valid.
+		if (match != null && userJson != null) {
+			if (this.isValidMovement(match, userJson.getString("id"), move)) {
+				this.updateBoard(match, userJson.getString("id"), move);
+				// sendUpdate()
+			} else {
+				// error movement not valid.
+			}
+				
 		}
 	}
 
-	private boolean checkMovement(String idMatch, String sessionID, JSONArray move) throws Exception, JSONException {
-		boolean valid = false;
-		Match match = this.gameService.getMatch(idMatch);
+	private void updateBoard(Match match, String userId, JSONArray move) {
+		boolean success = match.updateUserBoard(
+					userId, (int) move.get(0), (int) move.get(1)
+				);
+		
+		if (!success) {
+			//exception |& send error message
+		}
+	}
 
-		if (match != null) {
-			JSONObject userJson = this.apiService.getUser(sessionID);
-			if (!match.isValidMovement(userJson.getString("id"),
-					(int) move.get(0), (int) move.get(1))) {
-				valid = true;
-			}
+	private boolean isValidMovement(Match match, String userId, JSONArray move) throws Exception, JSONException {
+		boolean valid = false;
+
+		if (match.isValidMovement(userId, (int) move.get(0), (int) move.get(1))) {
+			valid = true;
 		}
 		
 		return valid;
+	}
+	
+	private JSONObject getUser(String sessionID) {
+		JSONObject userJson = null;
+
+		try {
+			userJson = this.apiService.getUser(sessionID);
+		} catch (Exception e) { }
+		
+		return userJson;
 	}
 
 	private void chat(JSONObject jso) {

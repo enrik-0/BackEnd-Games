@@ -15,13 +15,13 @@ public class MovementNM implements Movement{
 		methods = createFunctions();
 	}
 
-	public  boolean isValid(Number[] board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public  boolean isValid(ArrayList<Number> board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 		return validate(board);
 	}
 
 	
-	private boolean validPosition(Number[] board) {
+	private boolean validPosition(ArrayList<Number> board) {
 
 		boolean valid = false;
 		
@@ -31,21 +31,21 @@ public class MovementNM implements Movement{
 		return valid;
 	}
 	
-	private boolean sameNumber(Number[] board) {
+	private boolean sameNumber(ArrayList<Number> board) {
 
-		return board[position[0]].getNumber() == board[position[1]].getNumber();
+		return board.get(position[0]).getNumber() == board.get(position[1]).getNumber();
 	}
 	
-	private boolean addUpTen(Number[] board) {
+	private boolean addUpTen(ArrayList<Number> board) {
 
-		return (board[position[0]].getNumber() +
-				board[position[1]].getNumber()) == 10;
+		return (board.get(position[0]).getNumber() +
+				board.get(position[1]).getNumber()) == 10;
 	}
 
-	private boolean validate(Number[] board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private boolean validate(ArrayList<Number> board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 		byte lengthH = 9;
-		byte lengthV = (byte) (board.length / lengthH);
+		byte lengthV = (byte) (81 / lengthH);
 		ArrayList<Byte> all = new ArrayList<Byte>();
 		boolean valid = true;
 		if(!validPosition(board)) {
@@ -159,7 +159,7 @@ public class MovementNM implements Movement{
 	}
 	
 
-	private ArrayList<Byte> launcher(Object object, Method method,Number[] board, byte... w) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	private ArrayList<Byte> launcher(Object object, Method method, ArrayList<Number> board, byte... w) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 
 		//vertical need a counter so we check if the method is vertical
 		boolean isVertical = method.getName().toLowerCase().contains("vertical");
@@ -188,7 +188,7 @@ public class MovementNM implements Movement{
 			if (current < 0)
 				next = false;
 			else
-				if (!board[current].isFree()) {
+				if (!board.get(current).isFree()) {
 					next = false;
 					positions.add(current);
 				}
