@@ -1,6 +1,8 @@
 package edu.uclm.esi.ds.games.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -134,7 +136,7 @@ class PlayNumberMatchTest {
 	}
 	
 	@Test
-	void addNumbers() throws BoardIsFullException {
+	void testAddNumbers() throws BoardIsFullException {
 		hr(); hr();
 		System.out.println("\nADD NUMBERS");
 		Board board = new Board();
@@ -187,7 +189,6 @@ class PlayNumberMatchTest {
 		System.out.println("\nAFTER 3");
 		printBoard(board.getDigits());
 	}
-	
 	
 	private void hr() {
 		System.out.println("\n-----------------------------------------------");

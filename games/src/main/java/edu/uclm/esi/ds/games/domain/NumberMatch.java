@@ -47,6 +47,7 @@ public class NumberMatch extends Match {
 		this.boards.put(this.players.get(1).getId(), board.copy());
 	}
 
+	@Override
 	public Board getPlayerBoard(String userId) {
 		return this.boards.get(userId);
 	}
@@ -94,8 +95,8 @@ public class NumberMatch extends Match {
 	 */
 	@Override
 	public boolean updateUserBoard(String userId, int i, int j) {
-		Board board = this.boards.get(userId);
 		boolean success = false;
+		Board board = this.boards.get(userId);
 
 		if (board != null) {
 			board.updateBoard(i, j);

@@ -18,6 +18,7 @@ public abstract class Match {
 	
 	public abstract String getId();
 	public abstract List<User> getPlayers();
+	public abstract Board getPlayerBoard(String userId);
 	public abstract List<Board> getBoards();
 	public abstract boolean isReady();
 	public abstract void addPlayer(User player);

@@ -45,7 +45,7 @@ public class TestNumberMatch {
 		ResultActions response = 
 				sendGameRequest(GameName.nm.toString(), "1234");
 
-		response.andExpect(status().isFound());
+		response.andExpect(status().isUnauthorized());
 	}
 
 	@Test @Order(2)

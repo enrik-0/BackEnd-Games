@@ -59,7 +59,7 @@ public class Board {
 		ArrayList<Number> aux = new ArrayList<Number>();
 
 		// for to current rows
-		for (int i = 0; i <= this.getNumRows(); i++) {
+		for (int i = 0; i <= this.calcNumRows(); i++) {
 			if (!isRowFree(i)) {
 				aux.addAll(this.getRow(i));
 			}
@@ -68,15 +68,15 @@ public class Board {
 		this.digits = aux;
 	}
 
-	private int getNumRows() {
+	private int calcNumRows() {
 		return (this.digits.size()-1)/9;
 	}
 
 	private List<Number> getRow(int rowIndex) {
-		return this.digits.subList(rowIndex*9, this.getMaxIndex(rowIndex));
+		return this.digits.subList(rowIndex*9, this.calcMaxIndex(rowIndex));
 	}
 
-	private int getMaxIndex(int rowIndex) {
+	private int calcMaxIndex(int rowIndex) {
 		int max = (rowIndex*9)+9;
 
 		if (max > this.digits.size()) {
@@ -94,12 +94,12 @@ public class Board {
 	 */
 	private boolean isRowFree(int rowIndex) {
 		boolean isFree = true;
-		List<Number> aux = this.digits.subList(rowIndex*9, this.getMaxIndex(rowIndex));
+		List<Number> aux = this.digits.subList(rowIndex*9, this.calcMaxIndex(rowIndex));
 		
 		if (aux.stream().anyMatch(value -> !value.isFree())) {
 			isFree = false;
 		}
 
 		return isFree;
-	}	
+	}
 }
