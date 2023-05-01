@@ -51,7 +51,7 @@ public class WSGames extends TextWebSocketHandler {
 	private void handleMessage(WebSocketSession session, JSONObject jso) throws Exception {
 		String type = jso.getString("type");
 
-		if (type.equals("PLAYER READY")) {
+		if(type.equals("PLAYER READY")) {
 			this.notifyIfMatchStarted(session, jso);
 		} else if (type.equals("MOVEMENT")) { 
 			this.move(session, jso);
@@ -69,11 +69,12 @@ public class WSGames extends TextWebSocketHandler {
 	private void notifyIfMatchStarted(WebSocketSession session, JSONObject jso) throws JSONException {
 		String idMatch = jso.getString("idMatch");
 		Match match = this.gameService.getMatch(idMatch);
-		JSONObject boards = new JSONObject(match.getBoards().toString());
+		String e= match.getBoards().get(0).toString();
+		JSONObject board = new JSONObject(match.getBoards().get(0));
 
 		if (match != null) {
 			this.send(session, "type", "MATCH STARTED", "idMatch", idMatch,
-					"boards", boards.toString());
+					"board", board.toString());
 		}
 	}	
 
@@ -111,7 +112,9 @@ public class WSGames extends TextWebSocketHandler {
 	private boolean isValidMovement(Match match, String userId, JSONArray move) throws Exception, JSONException {
 		boolean valid = false;
 
-		if (match.isValidMovement(userId, (int) move.get(0), (int) move.get(1))) {
+		int w = move.getInt(0);
+		int e = move.getInt(1);
+		if (match.isValidMovement(userId, move.getInt(0), move.getInt(1))) {
 			valid = true;
 		}
 		
@@ -120,7 +123,7 @@ public class WSGames extends TextWebSocketHandler {
 
 	private void updateBoard(Match match, String userId, JSONArray move) throws Exception {
 		boolean success = match.updateUserBoard(
-					userId, (int) move.get(0), (int) move.get(1)
+					userId,move.getInt(0), (int) move.getInt(1)
 				);
 		
 		if (!success) {

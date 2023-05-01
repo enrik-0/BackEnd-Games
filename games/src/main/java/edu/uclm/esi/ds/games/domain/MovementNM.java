@@ -45,7 +45,7 @@ public class MovementNM implements Movement{
 	private boolean validate(ArrayList<Number> board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 		byte lengthH = 9;
-		byte lengthV = (byte) (81 / lengthH);
+		byte lengthV = (byte) (board.size() / lengthH);
 		ArrayList<Byte> all = new ArrayList<Byte>();
 		boolean valid = true;
 		if(!validPosition(board)) {
