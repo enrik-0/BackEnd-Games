@@ -43,16 +43,36 @@ public class Board {
 
 		if (aux.size() + this.digits.size() < MAX_BOARD_LEN) {
 			this.digits.addAll(aux);
-		} else {
+		} else if (aux.size() + this.digits.size() > MAX_BOARD_LEN) {
 			this.digits.addAll(aux.subList(0, MAX_BOARD_LEN-this.digits.size()));
+		}
+		
+		if (this.digits.size() == MAX_BOARD_LEN) {
+			if (!checkMovesAvailable()) {
+				throw new BoardIsFullException("Game Over!");
+			}
 		}
 	}
 
-	public void updateBoard(int i, int j) {
+	/**
+	 * Updates the board state given two positions and return if is a win.
+	 * 
+	 * @param i first number position
+	 * @param j second number position
+	 * @return true if board is empty (win), false if not.
+	 */
+	public boolean updateBoard(int i, int j) {
+		boolean win = false;
+
 		this.digits.get(i).setFree(true);
 		this.digits.get(j).setFree(true);
 		
 		this.cleanFreeRows();
+		if (this.digits.isEmpty()) {
+			win = true;
+		}
+		
+		return win;
 	}
 
 	private void cleanFreeRows() {
@@ -101,5 +121,15 @@ public class Board {
 		}
 
 		return isFree;
+	}
+
+	private boolean checkMovesAvailable() {
+		boolean areMovesAvailable = false;
+		Movement move = null;
+
+		for (int i = 0; i < MAX_BOARD_LEN; i++) {
+		}
+
+		return areMovesAvailable;
 	}
 }
