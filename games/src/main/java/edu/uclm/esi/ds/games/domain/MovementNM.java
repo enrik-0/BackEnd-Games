@@ -81,7 +81,7 @@ public class MovementNM implements Movement{
 
 		byte result = (byte) (start + 1);
 
-		if  (result > length)
+		if  (result > length * length)
 			result = -1;
 
 		return result;
@@ -99,14 +99,9 @@ public class MovementNM implements Movement{
 
 	public byte  calcVerticalDown(byte start, byte lengthH, byte lengthV, byte k) {
 
-		byte result;
-		byte i =(byte) (start - (start % lengthH ) * k);
-
-		if (i >= lengthV)
+		byte result = (byte) (start + lengthH * k);
+		if(result >= lengthH * lengthV)
 			result = -1;
-		else
-			result = (byte) (start + lengthH * k);
-
 		return result;
 	}
 	
@@ -161,6 +156,7 @@ public class MovementNM implements Movement{
 
 	private ArrayList<Byte> launcher(Object object, Method method, ArrayList<Number> board, byte... w) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 
+		byte q;
 		//vertical need a counter so we check if the method is vertical
 		boolean isVertical = method.getName().toLowerCase().contains("vertical");
 		boolean next = true;
@@ -184,20 +180,25 @@ public class MovementNM implements Movement{
 		do {
 
 			current = (byte) method.invoke(object, parameters);
-
-			if (current < 0)
+			if (current != position[0]) {
+			if (current < 0 || current >= board.size())
 				next = false;
 			else
 				if (!board.get(current).isFree()) {
 					next = false;
 					positions.add(current);
-				}
+				}}
 
 			parameters[0] = current;
 
-			if (isVertical)
-				parameters[w.length] = (byte) parameters[w.length] + 1;
-					
+			if (isVertical) {
+				try {
+				 q = (byte) (Integer.parseInt(parameters[w.length].toString()) + 1);
+				 parameters[w.length] = q ;
+				 }catch(Exception e) {
+					 System.out.println(e.getMessage());
+				 }
+			}
 
 		}while(next);
 		return positions;
