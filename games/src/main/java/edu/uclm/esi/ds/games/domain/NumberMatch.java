@@ -91,18 +91,17 @@ public class NumberMatch extends Match {
 	 * @param i: position of the first number
 	 * @param j: position of the second number
 	 * 
-	 * @return If update is succesful true, otherwise false.
+	 * @return If user wins true, otherwise false.
 	 */
 	@Override
 	public boolean updateUserBoard(String userId, int i, int j) {
-		boolean success = false;
+		boolean isWin = false;
 		Board board = this.boards.get(userId);
 
 		if (board != null) {
-			board.updateBoard(i, j);
-			success = true;
+			isWin = board.updateBoard(i, j);
 		}
 		
-		return success;
+		return isWin;
 	}
 }
