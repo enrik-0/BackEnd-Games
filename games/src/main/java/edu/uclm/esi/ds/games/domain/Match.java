@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONTokener;
+
 import edu.uclm.esi.ds.games.entities.User;
 
 public abstract class Match {
@@ -19,6 +21,7 @@ public abstract class Match {
 	public abstract String getId();
 	public abstract List<User> getPlayers();
 	public abstract Board getPlayerBoard(String userId);
+	public abstract List<String> getPlayersNames();
 	public abstract List<Board> getBoards();
 	public abstract boolean isReady();
 	public abstract void addPlayer(User player);
