@@ -45,7 +45,7 @@ public class MovementNM implements Movement{
 	private boolean validate(ArrayList<Number> board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 		byte lengthH = 9;
-		byte lengthV = (byte) (board.size() / lengthH);
+		byte lengthV = (byte) Math.ceil(((double) board.size() / (double) lengthH));
 		ArrayList<Byte> all = new ArrayList<Byte>();
 		boolean valid = true;
 		if(!validPosition(board)) {
@@ -99,7 +99,7 @@ public class MovementNM implements Movement{
 
 	public byte  calcVerticalDown(byte start, byte lengthH, byte lengthV, byte k) {
 
-		byte result = (byte) (start + lengthH * k);
+		byte result = (byte) (start + lengthH);
 		if(result >= lengthH * lengthV)
 			result = -1;
 		return result;
