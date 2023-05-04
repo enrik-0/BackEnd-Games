@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import edu.uclm.esi.ds.games.entities.User;
 
 public class NumberMatch extends Match {
@@ -25,6 +27,7 @@ public class NumberMatch extends Match {
 		return this.ready;
 	}
 
+	@JsonIgnore
 	public List<User> getPlayers() {
 		return this.players;
 	}
@@ -48,10 +51,24 @@ public class NumberMatch extends Match {
 	}
 
 	@Override
+	@JsonIgnore
 	public Board getPlayerBoard(String userId) {
 		return this.boards.get(userId);
 	}
+
+	@Override
+	@JsonIgnore
+	public List<String> getPlayersNames() {
+		List<String> names = new ArrayList<String>();
+
+		for (User user : this.players) {
+			names.add(user.getName());
+		}
+		
+		return names;
+	}
 	
+	@JsonIgnore
 	public List<Board> getBoards() {
 		return this.boards.values().stream().toList();
 	}
