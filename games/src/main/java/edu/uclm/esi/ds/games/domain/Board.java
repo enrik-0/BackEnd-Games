@@ -1,5 +1,6 @@
 package edu.uclm.esi.ds.games.domain;
 
+import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -125,11 +126,22 @@ public class Board {
 
 	private boolean checkMovesAvailable() {
 		boolean areMovesAvailable = false;
-		Movement move = null;
+		Movement move;
 
-		for (int i = 0; i < MAX_BOARD_LEN; i++) {
+		for (int i = 0; i < MAX_BOARD_LEN && !areMovesAvailable; i++) {
+			for (int j = i + 1; j < MAX_BOARD_LEN && !areMovesAvailable; j++) {
+				move = new MovementNM(i, j);
+				try {
+						areMovesAvailable = move.isValid(digits);
+						if(areMovesAvailable)
+							System.out.println("primer valido encontrado: i:" + i +" j:"+ j);
+					} 
+					 catch (Exception e) {}
+				
+			
+
+			}
 		}
-
 		return areMovesAvailable;
 	}
 }

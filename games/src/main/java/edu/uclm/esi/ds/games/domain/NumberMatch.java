@@ -89,7 +89,6 @@ public class NumberMatch extends Match {
 	public boolean isValidMovement(String userId, int i, int j) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Movement move = new MovementNM(i, j);
 		boolean isValid = false;
-
 		if (move.isValid(this.getPlayerBoard(userId).getDigits())) {
 			if (this.movements.get(userId) == null) {
 				this.movements.put(userId, new ArrayList<>());

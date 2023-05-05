@@ -33,6 +33,7 @@ public class WSGames extends TextWebSocketHandler {
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		String uri = session.getUri().getQuery();
 		String idMatch = uri.split("=")[1];
+		System.out.println("conectado");
 		
 		if (this.sessions.get(idMatch) == null) {
 			this.sessions.put(idMatch, new ArrayList<WebSocketSession>());
@@ -52,6 +53,8 @@ public class WSGames extends TextWebSocketHandler {
 		} catch (JSONException e) {
 			this.sendToSession(session, "type", "ERROR", "message", "JSON format error");
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
 			this.sendToSession(session, "type", "ERROR", "message", "Unexpected error");
 		}
 	}
@@ -75,10 +78,11 @@ public class WSGames extends TextWebSocketHandler {
 	private void notifyIfMatchStarted(JSONObject jso) throws JSONException {
 		String idMatch = jso.getString("idMatch");
 		Match match = this.gameService.getMatch(idMatch);
-		JSONObject board = new JSONObject(match.getBoards().get(0));
-		JSONObject players = new JSONObject(match.getPlayersNames());
 
 		if (match != null) {
+			JSONObject board = new JSONObject(match.getBoards().get(0));
+			JSONObject players = new JSONObject(match.getPlayersNames());
+			System.out.println("enviar partida");
 			this.sendToMatch(this.sessions.get(idMatch), "type", "MATCH STARTED", "idMatch", idMatch,
 					"players", players.toString(), "board", board.toString());
 		}
