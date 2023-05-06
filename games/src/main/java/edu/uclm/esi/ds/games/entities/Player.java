@@ -1,5 +1,7 @@
 package edu.uclm.esi.ds.games.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Player extends User {
 
 	public Player(String id, String name, String email) {
@@ -8,6 +10,7 @@ public class Player extends User {
 		this.email = email;
 	}
 
+	@JsonIgnore
 	public String getId() {
 		return id;
 	}
@@ -24,6 +27,7 @@ public class Player extends User {
 		this.name = name;
 	}
 
+	@JsonIgnore
 	public String getEmail() {
 		return email;
 	}

@@ -3,6 +3,7 @@ package edu.uclm.esi.ds.games.ws;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,7 +82,7 @@ public class WSGames extends TextWebSocketHandler {
 
 		if (match != null) {
 			JSONObject board = new JSONObject(match.getBoards().get(0));
-			JSONObject players = new JSONObject(match.getPlayersNames());
+			JSONArray players = new JSONArray(match.getPlayersNames());
 			System.out.println("enviar partida");
 			this.sendToMatch(this.sessions.get(idMatch), "type", "MATCH STARTED", "idMatch", idMatch,
 					"players", players.toString(), "board", board.toString());
@@ -205,7 +206,10 @@ public class WSGames extends TextWebSocketHandler {
 	}
 
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws JSONException {
-		this.sessions.values().forEach(value -> value.remove(session));
+		String uri = session.getUri().getQuery();
+		String idMatch = uri.split("=")[1];
+
+		this.sessions.remove(idMatch);
 		JSONObject jso = new JSONObject();
 		jso.put("type", "BYE");
 		jso.put("message", "Un usuario se ha ido");

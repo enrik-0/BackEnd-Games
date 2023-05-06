@@ -26,7 +26,7 @@ public class NumberMatch extends Match {
 	public boolean isReady() {
 		return this.ready;
 	}
-
+	
 	@JsonIgnore
 	public List<User> getPlayers() {
 		return this.players;
@@ -57,6 +57,7 @@ public class NumberMatch extends Match {
 	}
 
 	@Override
+	@JsonIgnore
 	public List<String> getPlayersNames() {
 		List<String> names = new ArrayList<String>();
 
