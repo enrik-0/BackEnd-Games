@@ -57,7 +57,6 @@ public class NumberMatch extends Match {
 	}
 
 	@Override
-	@JsonIgnore
 	public List<String> getPlayersNames() {
 		List<String> names = new ArrayList<String>();
 

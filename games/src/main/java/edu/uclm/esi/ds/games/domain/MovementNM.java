@@ -194,13 +194,13 @@ public class MovementNM implements Movement{
 
 			current = (byte) method.invoke(object, parameters);
 			if (current != position[0]) {
-			if (current < 0 || current >= board.size())
-				next = false;
-			else
-				if (!board.get(current).isFree()) {
+				if (current < 0 || current >= board.size())
+					next = false;
+				else if (!board.get(current).isFree()) {
 					next = false;
 					positions.add(current);
-				}}
+				}
+			}
 
 			parameters[0] = current;
 

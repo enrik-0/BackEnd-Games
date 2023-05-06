@@ -23,12 +23,20 @@ public class Board {
 	}
 
 	public void setDigits(ArrayList<Number> digits) {
-		this.digits = digits;
+		ArrayList<Number> aux = new ArrayList<>();
+
+		for (Number num : digits) {
+			aux.add(num.copy());
+		}
+
+		this.digits = aux;
 	}
 
 	public Board copy() {
 		Board board = new Board();
-		board.setDigits((ArrayList<Number>) digits.clone());
+
+		board.setDigits(this.digits);
+
 		return board;
 	}
 
