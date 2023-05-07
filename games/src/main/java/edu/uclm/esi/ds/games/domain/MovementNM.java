@@ -4,7 +4,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import edu.uclm.esi.ds.games.excetions.InvalidMoveException;
+import edu.uclm.esi.ds.games.exceptions.InvalidMoveException;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
 public class MovementNM implements Movement{
 	private byte[] position = new byte[2];
@@ -21,6 +24,12 @@ public class MovementNM implements Movement{
 		position[0] = (byte) i;
 	}
 
+	public byte getFirst() {
+		return position[0];
+	}
+	public byte getSecond() {
+		return position[1];
+	}
 	public  boolean isValid(ArrayList<Number> board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 		return validate(board);

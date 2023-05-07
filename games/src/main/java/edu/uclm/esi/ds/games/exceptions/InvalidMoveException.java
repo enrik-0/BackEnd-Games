@@ -1,4 +1,4 @@
-package edu.uclm.esi.ds.games.excetions;
+package edu.uclm.esi.ds.games.exceptions;
 
 public class InvalidMoveException extends Exception {
 

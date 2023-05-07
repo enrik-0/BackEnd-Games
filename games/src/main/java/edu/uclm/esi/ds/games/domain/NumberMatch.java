@@ -9,14 +9,24 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import edu.uclm.esi.ds.games.entities.MatchPlayer;
 import edu.uclm.esi.ds.games.entities.User;
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
 
+@Entity
+@Table (schema = "games",
+		name ="nm")
+@PrimaryKeyJoinColumn(name="id")
 public class NumberMatch extends Match {
+
+
 	public NumberMatch() {
 		this.id = UUID.randomUUID().toString();
 		this.players = new LinkedList<>();
 		this.boards = new HashMap<>();
-		this.movements = new HashMap<>();
+		this.movements = new LinkedList<>();
 	}
 
 	public String getId() {
@@ -28,7 +38,7 @@ public class NumberMatch extends Match {
 	}
 
 	@JsonIgnore
-	public List<User> getPlayers() {
+	public List<MatchPlayer> getPlayers() {
 		return this.players;
 	}
 
@@ -39,15 +49,18 @@ public class NumberMatch extends Match {
 	}
 
 	public void addPlayer(User player) {
-		this.players.add(player);
+		this.players.add(new MatchPlayer(this, player));
 		if (this.players.size() == 2)
 			setReady(true);
 	}
 
 	protected void buildBoards() {
 		Board board = new Board();
-		this.boards.put(this.players.get(0).getId(), board);
-		this.boards.put(this.players.get(1).getId(), board.copy());
+		String player = this.players.get(0).getId().getPlayer();
+		this.boards.put(player, board);
+
+		player = this.players.get(1).getId().getPlayer();
+		this.boards.put(player, board.copy());
 	}
 
 	@Override
@@ -61,8 +74,8 @@ public class NumberMatch extends Match {
 	public List<String> getPlayersNames() {
 		List<String> names = new ArrayList<String>();
 
-		for (User user : this.players) {
-			names.add(user.getName());
+		for (MatchPlayer user : this.players) {
+			names.add(user.getPlayer().getName());
 		}
 		
 		return names;
@@ -86,19 +99,18 @@ public class NumberMatch extends Match {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 */
-	public boolean isValidMovement(String userId, int i, int j) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Movement move = new MovementNM(i, j);
+	public boolean isValidMovement(User user, int i, int j) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		MovementNM move = new MovementNM(i, j);
 		boolean isValid = false;
-		if (move.isValid(this.getPlayerBoard(userId).getDigits())) {
-			if (this.movements.get(userId) == null) {
-				this.movements.put(userId, new ArrayList<>());
-			}
-			this.movements.get(userId).add(move);
+		if (move.isValid(this.getPlayerBoard(user.getId()).getDigits())) {
+			MatchUserPosition movement = new MatchUserPosition(this, user, move);
+			this.movements.add(movement);
 			isValid = true;
 		}
 		
 		return isValid;
 	}
+	
 
 	/**
 	 * Updates the board of a user given the two positions of the numbers.
@@ -119,5 +131,10 @@ public class NumberMatch extends Match {
 		}
 		
 		return isWin;
+	}
+
+	@Override
+	public List<MatchUserPosition> getMovements() {
+		return this.movements;
 	}
 }
