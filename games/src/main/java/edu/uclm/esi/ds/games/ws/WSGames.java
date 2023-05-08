@@ -1,5 +1,8 @@
 package edu.uclm.esi.ds.games.ws;
 
+import edu.uclm.esi.ds.games.entities.User;
+import edu.uclm.esi.ds.games.entities.MatchPlayer;
+import edu.uclm.esi.ds.games.entities.Player;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +17,8 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import edu.uclm.esi.ds.games.dao.MatchDAO;
 import edu.uclm.esi.ds.games.domain.Match;
 import edu.uclm.esi.ds.games.exceptions.BoardIsFullException;
 import edu.uclm.esi.ds.games.services.APIService;
@@ -23,11 +28,13 @@ import edu.uclm.esi.ds.games.services.GameService;
 public class WSGames extends TextWebSocketHandler {
 	private GameService gameService;
 	private APIService apiService;
+	private MatchDAO matchDAO;
 	private HashMap<String, ArrayList<WebSocketSession>> sessions = new HashMap<>();
 
-	public WSGames(GameService games, APIService api) {
+	public WSGames(GameService games, APIService api, MatchDAO dao) {
 		this.gameService = games;
 		this.apiService = api;
+		this.matchDAO = dao;
 	}
 
 	@Override
@@ -133,26 +140,36 @@ public class WSGames extends TextWebSocketHandler {
 		JSONArray move = jso.getJSONArray("movement");
 		Match match = this.gameService.getMatch(idMatch);
 		JSONObject userJson = this.getUser(sessionID);
+		User user = null;
+		if (userJson != null)
+			user = new Player(userJson.getString("id"),
+					userJson.getString("name"), userJson.getString("email"));
+
+			
 		boolean isWin = false;
 
 		if (match != null && userJson != null) {
-			if (this.isValidMovement(match, userJson.getString("id"), move)) {
+			if (this.isValidMovement(match, user, move)) {
 				isWin = this.updateBoard(match, userJson.getString("id"), move);
 				this.sendUpdate(this.sessions.get(idMatch), match, sessionID, userJson.getString("id"));
-				if (isWin)
+				if (isWin) {
 					this.sendToMatch(this.sessions.get(idMatch), "type", "WIN", "sessionID", sessionID);
+					for( MatchPlayer player : match.getPlayers())
+						if (player.getId().getPlayer() == user.getId())
+							player.setWinner(true);
+					this.gameService.saveMatch(match);
+				}
 			} else {
 				this.sendToMatch(this.sessions.get(idMatch), "type", "INVALID MOVE", "message", "Movement is not valid!");
 			}
 		}
 	}
 
-	private boolean isValidMovement(Match match, String userId, JSONArray move) throws Exception, JSONException {
+	private boolean isValidMovement(Match match, User user, JSONArray move) throws Exception, JSONException {
 		boolean valid = false;
 
-		if (match.isValidMovement(userId, move.getInt(0), move.getInt(1))) {
+		if (match.isValidMovement(user, move.getInt(0), move.getInt(1))) 
 			valid = true;
-		}
 		
 		return valid;
 	}
@@ -179,6 +196,12 @@ public class WSGames extends TextWebSocketHandler {
 			this.sendUpdate(this.sessions.get(idMatch), match, sessionID, userJson.getString("id"));
 		} catch (BoardIsFullException e) {
 			this.sendToMatch(this.sessions.get(idMatch), "type", "LOSE", "sessionID", sessionID);
+			
+			for (MatchPlayer player : match.getPlayers())
+				if (player.getId().getPlayer() != userJson.getString("id"))
+					player.setWinner(true);
+
+			this.gameService.saveMatch(match);
 		};
 	}
 
