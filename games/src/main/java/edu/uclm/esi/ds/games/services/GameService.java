@@ -47,4 +47,8 @@ public class GameService {
 	public Match getMatch(String idMatch) {
 		return this.matches.get(idMatch);
 	}
+
+	public void saveMatch(Match match) {
+		this.matchDAO.save(match);
+	}
 }

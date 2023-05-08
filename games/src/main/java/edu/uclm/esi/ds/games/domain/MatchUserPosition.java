@@ -1,6 +1,5 @@
 package edu.uclm.esi.ds.games.domain;
 import edu.uclm.esi.ds.games.entities.MatchPlayerId;
-
 import edu.uclm.esi.ds.games.entities.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -26,10 +25,10 @@ public class MatchUserPosition {
 	
 
     @Column(name = "position1")
-    private int position1;
+    private byte position1;
 
     @Column(name = "position2")
-    private int position2;
+    private byte position2;
 
     public MatchUserPosition() {}
 
@@ -63,7 +62,7 @@ public class MatchUserPosition {
 	}
 
 	public void setPosition1(int position1) {
-		this.position1 = position1;
+		this.position1 = (byte) position1;
 	}
 
 	public int getPosition2() {
@@ -71,7 +70,7 @@ public class MatchUserPosition {
 	}
 
 	public void setPosition2(int position2) {
-		this.position2 = position2;
+		this.position2 = (byte) position2;
 	}
 
 }

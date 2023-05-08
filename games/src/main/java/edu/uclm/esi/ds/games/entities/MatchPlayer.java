@@ -24,12 +24,13 @@ public class MatchPlayer {
     @JoinColumn(name = "player", insertable = false, updatable = false)
     private User player;
     
-    public MatchPlayer() {};
+    private boolean winner = false;
+    
+    public MatchPlayer(){};
     public MatchPlayer(Match match, User player) {
     	this.id = new MatchPlayerId(match.getId(), player.getId());
     	this.match = match;
     	this.player = player;
-    	
     }
     
     public MatchPlayerId getId() {
@@ -55,5 +56,11 @@ public class MatchPlayer {
     public void setPlayer(User player) {
         this.player = player;
     }
+	public boolean isWinner() {
+		return winner;
+	}
+	public void setWinner(boolean winner) {
+		this.winner = winner;
+	}
 }
 

@@ -13,10 +13,10 @@ public class MatchPlayerId implements Serializable {
     @Column(name = "match")
     private String match;
     
-    @Column(name = "player")
+    @Column(name = "player", length = 36)
     private String player;
 
-    public MatchPlayerId() {};
+    public MatchPlayerId(){};
     public MatchPlayerId(String match, String player) {
 
     	this.match = match;
