@@ -22,6 +22,7 @@ public abstract class User {
 	protected String email;
 	@NotEmpty
 	protected String pwd;
+	protected int points;
 	
 	
 	public abstract String getId();
