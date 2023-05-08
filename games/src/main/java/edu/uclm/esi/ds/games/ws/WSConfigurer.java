@@ -7,7 +7,6 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
-import edu.uclm.esi.ds.games.dao.MatchDAO;
 import edu.uclm.esi.ds.games.services.APIService;
 import edu.uclm.esi.ds.games.services.GameService;
 
@@ -19,12 +18,10 @@ public class WSConfigurer implements WebSocketConfigurer {
 	private GameService gameService;
 	@Autowired
 	private APIService apiService;
-	@Autowired
-	private MatchDAO dao;
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(new WSGames(gameService, apiService, dao), "/wsGames").
+		registry.addHandler(new WSGames(gameService, apiService), "/wsGames").
 		setAllowedOrigins("*")
 		.addInterceptors(new HttpSessionHandshakeInterceptor());
 	}

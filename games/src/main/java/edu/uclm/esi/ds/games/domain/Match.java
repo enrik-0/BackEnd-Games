@@ -4,21 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 
-import org.json.JSONTokener;
-
 import edu.uclm.esi.ds.games.entities.MatchPlayer;
 import edu.uclm.esi.ds.games.entities.User;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -47,6 +39,7 @@ public abstract class Match {
 	
 	public abstract String getId();
 	public abstract List<MatchPlayer> getPlayers();
+	public abstract MatchPlayer getPlayerById(String userId);
 	public abstract Board getPlayerBoard(String userId);
 	public abstract List<String> getPlayersNames();
 	public abstract List<Board> getBoards();

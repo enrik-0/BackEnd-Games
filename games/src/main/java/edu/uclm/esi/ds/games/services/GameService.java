@@ -16,7 +16,6 @@ public class GameService {
 	private WaitingRoom waitingRoom;
 	// { "idMatch": Match }
 	private ConcurrentHashMap<String, Match> matches;
-	
 	@Autowired
 	private MatchDAO matchDAO;
 
@@ -35,13 +34,19 @@ public class GameService {
 
 		return match;
 	}
-	
-	private Player createPlayer(JSONObject player) {
-		return new Player(
-					player.getString("id"),
-					player.getString("name"),
-					player.getString("email")
-				);
+
+	public Match createCustomMatch(String game, JSONObject player) {
+		return waitingRoom.createCustomMatch(game, createPlayer(player));
+	}
+
+	public Match joinCustomMatch(String game, JSONObject player, String code) {
+		Match match = this.waitingRoom.joinCustomMatch(game, createPlayer(player), code);
+
+		if (match == null) return null;
+		if (match.isReady())
+			matches.put(match.getId(), match);
+
+		return match;
 	}
 
 	public Match getMatch(String idMatch) {
@@ -50,5 +55,13 @@ public class GameService {
 
 	public void saveMatch(Match match) {
 		this.matchDAO.save(match);
+	}
+	
+	private Player createPlayer(JSONObject player) {
+		return new Player(
+					player.getString("id"),
+					player.getString("name"),
+					player.getString("email")
+				);
 	}
 }

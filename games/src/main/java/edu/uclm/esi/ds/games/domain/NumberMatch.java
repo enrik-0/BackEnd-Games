@@ -20,8 +20,6 @@ import jakarta.persistence.Table;
 		name ="nm")
 @PrimaryKeyJoinColumn(name="id")
 public class NumberMatch extends Match {
-
-
 	public NumberMatch() {
 		this.id = UUID.randomUUID().toString();
 		this.players = new LinkedList<>();
@@ -40,6 +38,20 @@ public class NumberMatch extends Match {
 	@JsonIgnore
 	public List<MatchPlayer> getPlayers() {
 		return this.players;
+	}
+
+	@Override
+	@JsonIgnore
+	public MatchPlayer getPlayerById(String userId) {
+		MatchPlayer player = null;
+
+		for (MatchPlayer p : this.getPlayers()) {
+			if (p.getId().getPlayer().equals(userId)) {
+				player = p;
+			}
+		}
+
+		return player;
 	}
 
 	public void setReady(boolean ready) {

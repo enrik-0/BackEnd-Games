@@ -1,12 +1,8 @@
 package edu.uclm.esi.ds.games.ws;
 
-import edu.uclm.esi.ds.games.entities.User;
-import edu.uclm.esi.ds.games.entities.MatchPlayer;
-import edu.uclm.esi.ds.games.entities.Player;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,8 +14,10 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import edu.uclm.esi.ds.games.dao.MatchDAO;
 import edu.uclm.esi.ds.games.domain.Match;
+import edu.uclm.esi.ds.games.entities.MatchPlayer;
+import edu.uclm.esi.ds.games.entities.Player;
+import edu.uclm.esi.ds.games.entities.User;
 import edu.uclm.esi.ds.games.exceptions.BoardIsFullException;
 import edu.uclm.esi.ds.games.services.APIService;
 import edu.uclm.esi.ds.games.services.GameService;
@@ -28,13 +26,11 @@ import edu.uclm.esi.ds.games.services.GameService;
 public class WSGames extends TextWebSocketHandler {
 	private GameService gameService;
 	private APIService apiService;
-	private MatchDAO matchDAO;
 	private HashMap<String, ArrayList<WebSocketSession>> sessions = new HashMap<>();
 
-	public WSGames(GameService games, APIService api, MatchDAO dao) {
+	public WSGames(GameService games, APIService api) {
 		this.gameService = games;
 		this.apiService = api;
-		this.matchDAO = dao;
 	}
 
 	@Override
@@ -154,9 +150,7 @@ public class WSGames extends TextWebSocketHandler {
 				this.sendUpdate(this.sessions.get(idMatch), match, sessionID, userJson.getString("id"));
 				if (isWin) {
 					this.sendToMatch(this.sessions.get(idMatch), "type", "WIN", "sessionID", sessionID);
-					for( MatchPlayer player : match.getPlayers())
-						if (player.getId().getPlayer() == user.getId())
-							player.setWinner(true);
+					match.getPlayerById(user.getId()).setWinner(true);
 					this.gameService.saveMatch(match);
 				}
 			} else {
@@ -196,23 +190,23 @@ public class WSGames extends TextWebSocketHandler {
 			this.sendUpdate(this.sessions.get(idMatch), match, sessionID, userJson.getString("id"));
 		} catch (BoardIsFullException e) {
 			this.sendToMatch(this.sessions.get(idMatch), "type", "LOSE", "sessionID", sessionID);
-			
-			for (MatchPlayer player : match.getPlayers())
-				if (player.getId().getPlayer() != userJson.getString("id"))
-					player.setWinner(true);
-
+			this.getDiffPlayerFromId(match, userJson).setWinner(true);;
 			this.gameService.saveMatch(match);
 		};
 	}
 
-	private JSONObject getUser(String sessionID) {
-		JSONObject userJson = null;
+	private MatchPlayer getDiffPlayerFromId(Match match, JSONObject userJson) throws JSONException {
+		MatchPlayer player = null;
 
-		try {
-			userJson = this.apiService.getUser(sessionID);
-		} catch (Exception e) { }
+		for (MatchPlayer p : match.getPlayers())
+			if (p.getId().getPlayer() != userJson.getString("id"))
+				player = p;
 		
-		return userJson;
+		return player;
+	}
+
+	private JSONObject getUser(String sessionID) {
+		return this.apiService.getUser(sessionID);
 	}
 
 	private void chat(JSONObject jso) {
@@ -236,5 +230,6 @@ public class WSGames extends TextWebSocketHandler {
 		JSONObject jso = new JSONObject();
 		jso.put("type", "BYE");
 		jso.put("message", "Un usuario se ha ido");
+		System.out.println("closed");
 	}
 }
