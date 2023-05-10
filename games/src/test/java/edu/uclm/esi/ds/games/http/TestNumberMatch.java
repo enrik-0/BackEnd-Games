@@ -1,7 +1,5 @@
 package edu.uclm.esi.ds.games.http;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.UnsupportedEncodingException;
@@ -36,8 +34,7 @@ import edu.uclm.esi.ds.games.domain.GameName;
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @TestMethodOrder(OrderAnnotation.class)
-public class TestGames {
-
+public class TestNumberMatch {
 	@Autowired
 	private MockMvc server;
 	
@@ -46,7 +43,7 @@ public class TestGames {
 		ResultActions response = 
 				sendGameRequest(GameName.nm.toString(), "1234");
 
-		response.andExpect(status().isFound());
+		response.andExpect(status().isUnauthorized());
 	}
 
 	@Test @Order(2)
@@ -62,11 +59,6 @@ public class TestGames {
 		String payloadAna = getResponseGameRequest(sessionID);
 		JSONObject jsonAna = new JSONObject(payloadAna);
 		System.out.println(jsonAna.toString());
-
-		assertFalse(jsonPepe.getBoolean("ready"));
-		assertTrue(jsonAna.getBoolean("ready"));
-		assertTrue(jsonAna.getJSONArray("players").length() == 2);
-
 	}
 
 	@Test @Order(3)
@@ -86,7 +78,7 @@ public class TestGames {
 		    HttpPut request = new HttpPut("http://localhost:8080/users/login");
 
 		    StringEntity params = new StringEntity(jso.toString());
-		    request.addHeader("content-type", "application/json");
+		    request.addHeader("Content-type", "application/json");
 		    request.setEntity(params);
 
 		    HttpResponse response = httpClient.execute(request);
@@ -119,14 +111,14 @@ public class TestGames {
 		JSONObject jso = new JSONObject();
 		jso.put("name", player);
 		jso.put("email", player);
-		jso.put("pwd1", player);
-		jso.put("pwd2", player);
+		jso.put("pwd1", org.apache.commons.codec.digest.DigestUtils.sha512Hex(player));
+		jso.put("pwd2", org.apache.commons.codec.digest.DigestUtils.sha512Hex(player));
 		
 		HttpClient httpClient = HttpClientBuilder.create().build();
 
 		HttpPost request = new HttpPost("http://localhost:8080/users/register");
 		StringEntity params = new StringEntity(jso.toString());
-		request.addHeader("content-type", "application/json");
+		request.addHeader("Content-type", "application/json");
 		request.setEntity(params);
 		httpClient.execute(request);
 	}

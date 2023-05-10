@@ -4,8 +4,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import edu.uclm.esi.ds.games.exceptions.InvalidMoveException;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
+
 public class MovementNM implements Movement{
-	
 	private byte[] position = new byte[2];
 	private Method[] methods;
 
@@ -15,14 +19,24 @@ public class MovementNM implements Movement{
 		position[1] = (byte) (j <= i? i : j);
 		methods = createFunctions();
 	}
+	
+	public MovementNM(int i) {
+		position[0] = (byte) i;
+	}
 
-	public  boolean isValid(Number[] board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public byte getFirst() {
+		return position[0];
+	}
+	public byte getSecond() {
+		return position[1];
+	}
+	public  boolean isValid(ArrayList<Number> board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 		return validate(board);
 	}
 
 	
-	private boolean validPosition(Number[] board) {
+	private boolean validPosition(ArrayList<Number> board) {
 
 		boolean valid = false;
 		
@@ -32,46 +46,29 @@ public class MovementNM implements Movement{
 		return valid;
 	}
 	
-	private boolean sameNumber(Number[] board) {
+	private boolean sameNumber(ArrayList<Number> board) {
 
-		return board[position[0]].getNumber() == board[position[1]].getNumber();
+		return board.get(position[0]).getNumber() == board.get(position[1]).getNumber();
 	}
 	
-	private boolean addUpTen(Number[] board) {
+	private boolean addUpTen(ArrayList<Number> board) {
 
-		return (board[position[0]].getNumber() +
-				board[position[1]].getNumber()) == 10;
+		return (board.get(position[0]).getNumber() +
+				board.get(position[1]).getNumber()) == 10;
 	}
 
-	private boolean validate(Number[] board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private boolean validate(ArrayList<Number> board) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-		byte lengthH = 9;
-		byte lengthV = (byte) (board.length / lengthH);
-		ArrayList<Byte> all = new ArrayList<Byte>();
+		ArrayList<Byte> all;
 		boolean valid = true;
-		if(!validPosition(board)) {
-			valid = false;
-		} else {
-
-			//diagonal Up left
-			all.addAll(this.launcher(this, methods[0], board, position[0], lengthH));
-			//vertical up
-			all.addAll(this.launcher(this, methods[1], board, position[0], lengthH));
-			//diagonal Up right
-			all.addAll(this.launcher(this, methods[2], board, position[0], lengthH));
-			//horizontal right
-			all.addAll(this.launcher(this, methods[3], board, position[0], lengthH));
-			//diagonal down right
-			all.addAll(this.launcher(this, methods[4], board, position[0], lengthH));
-			//vertical down
-			all.addAll(this.launcher(this, methods[5], board, position[0], lengthH, lengthV));
-			//diagonal down left
-			all.addAll(this.launcher(this, methods[6], board, position[0], lengthH));
-			//horizontal left
-			all.addAll(this.launcher(this, methods[7], board, position[0]));
+		try {
+			all = calcAllValidMoves(board);
 
 			if (!all.contains(position[1]))
 				valid = false;
+
+		}catch(InvalidMoveException e) {
+			valid = false;
 		}
 
 		return valid;
@@ -82,7 +79,7 @@ public class MovementNM implements Movement{
 
 		byte result = (byte) (start + 1);
 
-		if  (result > length)
+		if  (result > length * length)
 			result = -1;
 
 		return result;
@@ -100,14 +97,9 @@ public class MovementNM implements Movement{
 
 	public byte  calcVerticalDown(byte start, byte lengthH, byte lengthV, byte k) {
 
-		byte result;
-		byte i =(byte) (start - (start % lengthH ) * k);
-
-		if (i >= lengthV)
+		byte result = (byte) (start + lengthH);
+		if(result >= lengthH * lengthV)
 			result = -1;
-		else
-			result = (byte) (start + lengthH * k);
-
 		return result;
 	}
 	
@@ -159,9 +151,34 @@ public class MovementNM implements Movement{
 		return result;
 	}
 	
+	public ArrayList<Byte> calcAllValidMoves(ArrayList<Number> board) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidMoveException {
+		byte lengthH = 9;
+		byte lengthV = (byte) Math.ceil(((double) board.size() / (double) lengthH));
+		ArrayList<Byte> all = new ArrayList<Byte>();
+		if(validPosition(board) && !board.get(position[0]).isFree()) { 
+			//diagonal Up left
+			all.addAll(this.launcher(this, methods[0], board, position[0], lengthH));
+			//vertical up
+			all.addAll(this.launcher(this, methods[1], board, position[0], lengthH));
+			//diagonal Up right
+			all.addAll(this.launcher(this, methods[2], board, position[0], lengthH));
+			//horizontal right
+			all.addAll(this.launcher(this, methods[3], board, position[0], lengthH));
+			//diagonal down right
+			all.addAll(this.launcher(this, methods[4], board, position[0], lengthH));
+			//vertical down
+			all.addAll(this.launcher(this, methods[5], board, position[0], lengthH, lengthV));
+			//diagonal down left
+			all.addAll(this.launcher(this, methods[6], board, position[0], lengthH));
+			//horizontal left
+			all.addAll(this.launcher(this, methods[7], board, position[0]));
+			} else throw new InvalidMoveException();
+		return all; 
+	}
 
-	private ArrayList<Byte> launcher(Object object, Method method,Number[] board, byte... w) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	private ArrayList<Byte> launcher(Object object, Method method, ArrayList<Number> board, byte... w) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 
+		byte q;
 		//vertical need a counter so we check if the method is vertical
 		boolean isVertical = method.getName().toLowerCase().contains("vertical");
 		boolean next = true;
@@ -185,20 +202,25 @@ public class MovementNM implements Movement{
 		do {
 
 			current = (byte) method.invoke(object, parameters);
-
-			if (current < 0)
-				next = false;
-			else
-				if (!board[current].isFree()) {
+			if (current != position[0]) {
+				if (current < 0 || current >= board.size())
+					next = false;
+				else if (!board.get(current).isFree()) {
 					next = false;
 					positions.add(current);
 				}
+			}
 
 			parameters[0] = current;
 
-			if (isVertical)
-				parameters[w.length] = (byte) parameters[w.length] + 1;
-					
+			if (isVertical) {
+				try {
+				 q = (byte) (Integer.parseInt(parameters[w.length].toString()) + 1);
+				 parameters[w.length] = q ;
+				 }catch(Exception e) {
+					 System.out.println(e.getMessage());
+				 }
+			}
 
 		}while(next);
 		return positions;
