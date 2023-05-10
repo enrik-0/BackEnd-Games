@@ -195,6 +195,19 @@ public class WSGames extends TextWebSocketHandler {
 		};
 	}
 
+	private void chat(JSONObject jso) {
+		String idMatch = jso.getString("idMatch");
+		String sessionID = jso.getString("sessionID");
+		String msg = jso.getString("message");
+		Match match = this.gameService.getMatch(idMatch);
+		JSONObject userJson = this.getUser(sessionID);
+		
+		if (match != null && userJson != null) {
+			this.sendToMatch(this.sessions.get(match.getId()), "type", "CHAT MESSAGE",
+					"username", userJson.getString("name"), "text", msg);
+		}
+	}
+
 	private MatchPlayer getDiffPlayerFromId(Match match, JSONObject userJson) throws JSONException {
 		MatchPlayer player = null;
 
@@ -209,11 +222,6 @@ public class WSGames extends TextWebSocketHandler {
 		return this.apiService.getUser(sessionID);
 	}
 
-	private void chat(JSONObject jso) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
 	}
@@ -226,10 +234,12 @@ public class WSGames extends TextWebSocketHandler {
 		String uri = session.getUri().getQuery();
 		String idMatch = uri.split("=")[1];
 
-		this.sessions.remove(idMatch);
-		JSONObject jso = new JSONObject();
-		jso.put("type", "BYE");
-		jso.put("message", "Un usuario se ha ido");
+		this.sessions.get(idMatch).remove(session);
+		if (this.sessions.get(idMatch).isEmpty()) {
+			this.sessions.remove(idMatch);
+		}
+
+		this.sendToMatch(this.sessions.get(idMatch), "type", "BYE", "message", "Un usuario se ha ido");
 		System.out.println("closed");
 	}
 }
