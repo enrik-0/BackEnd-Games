@@ -84,7 +84,12 @@ public class GameController {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged");
 		}
 		
-		return this.gameService.joinCustomMatch(game, userJson, matchCode);
+		Match match = this.gameService.joinCustomMatch(game, userJson, matchCode);
+		if (match == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match Not Found");
+		}
+
+		return match;
 	}
 	
 	private boolean checkGame(String game) {
