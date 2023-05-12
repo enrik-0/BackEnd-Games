@@ -1,7 +1,6 @@
 package edu.uclm.esi.ds.games.entities;
 
 import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
@@ -9,7 +8,6 @@ import jakarta.persistence.Embeddable;
 public class MatchPlayerId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-    
     @Column(name = "match")
     private String match;
     
@@ -18,7 +16,6 @@ public class MatchPlayerId implements Serializable {
 
     public MatchPlayerId(){};
     public MatchPlayerId(String match, String player) {
-
     	this.match = match;
     	this.player = player;
     }
@@ -38,7 +35,8 @@ public class MatchPlayerId implements Serializable {
 	public void setPlayer(String player) {
 		this.player = player;
 	}
-    
+
+
 
 
 }

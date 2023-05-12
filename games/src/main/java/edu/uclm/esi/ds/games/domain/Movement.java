@@ -1,9 +1,7 @@
-package edu.uclm.esi.ds.games.entities;
+package edu.uclm.esi.ds.games.domain;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-
-import edu.uclm.esi.ds.games.domain.Number;
 
 public interface Movement {
 	

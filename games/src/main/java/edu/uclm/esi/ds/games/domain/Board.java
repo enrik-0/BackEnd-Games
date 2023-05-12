@@ -4,12 +4,15 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.uclm.esi.ds.games.entities.Movement;
 import edu.uclm.esi.ds.games.exceptions.BoardIsFullException;
+import edu.uclm.esi.ds.games.exceptions.NoMovesAvailableException;
+import net.minidev.json.annotate.JsonIgnore;
 
 public class Board {
 	private ArrayList<Number> digits;
 	private final int MAX_BOARD_LEN = 81;
+	@JsonIgnore
+	private byte added = 0;
 
 	public Board() {
 		SecureRandom dice = new SecureRandom();
@@ -40,7 +43,7 @@ public class Board {
 		return board;
 	}
 
-	public void addNumbers() throws BoardIsFullException {
+	public void addNumbers() throws BoardIsFullException, NoMovesAvailableException {
 		List<Number> aux = this.digits.stream()
 				.filter(value -> !value.isFree())
 				.map(value -> value.copy())
@@ -56,11 +59,14 @@ public class Board {
 			this.digits.addAll(aux.subList(0, MAX_BOARD_LEN - this.digits.size()));
 		}
 		
-		if (this.digits.size() == MAX_BOARD_LEN) {
+		if (this.digits.size() == MAX_BOARD_LEN) 
 			if (!checkMovesAvailable()) {
 				throw new BoardIsFullException("Game Over!");
 			}
-		}
+		
+		noMoveLose();
+
+		added++;
 	}
 
 	/**
@@ -146,5 +152,11 @@ public class Board {
 			}
 		}
 		return areMovesAvailable;
+	}
+
+	public void noMoveLose() throws NoMovesAvailableException {
+		if (added == 3)
+			if (!checkMovesAvailable())
+				throw new NoMovesAvailableException("Game Over!");	
 	}
 }

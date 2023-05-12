@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import edu.uclm.esi.ds.games.entities.Movement;
 import edu.uclm.esi.ds.games.exceptions.InvalidMoveException;
 
 public class MovementNM implements Movement{

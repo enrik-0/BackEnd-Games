@@ -14,12 +14,15 @@ import edu.uclm.esi.ds.games.domain.MovementNM;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table (schema = "games",
 		name = "nm")
 @PrimaryKeyJoinColumn(name = "id")
 public class NumberMatch extends Match {
+	@Transient
+	private byte numbersAdded = 0;
 	public NumberMatch() {
 		this.id = UUID.randomUUID().toString();
 		this.players = new LinkedList<>();
@@ -149,5 +152,13 @@ public class NumberMatch extends Match {
 	@Override
 	public List<MatchUserPosition> getMovements() {
 		return this.movements;
+	}
+
+	public byte getNumbersAdded() {
+		return numbersAdded;
+	}
+
+	public void setNumbersAdded(byte numbersAdded) {
+		this.numbersAdded = numbersAdded;
 	}
 }

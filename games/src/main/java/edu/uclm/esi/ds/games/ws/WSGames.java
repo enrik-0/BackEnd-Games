@@ -19,6 +19,7 @@ import edu.uclm.esi.ds.games.entities.MatchPlayer;
 import edu.uclm.esi.ds.games.entities.Player;
 import edu.uclm.esi.ds.games.entities.User;
 import edu.uclm.esi.ds.games.exceptions.BoardIsFullException;
+import edu.uclm.esi.ds.games.exceptions.NoMovesAvailableException;
 import edu.uclm.esi.ds.games.services.APIService;
 import edu.uclm.esi.ds.games.services.GameService;
 
@@ -114,6 +115,7 @@ public class WSGames extends TextWebSocketHandler {
 		}
 	}
 
+
 	private void sendToSession(WebSocketSession session, String... tv) {
 		JSONObject jso = new JSONObject();
 
@@ -153,9 +155,24 @@ public class WSGames extends TextWebSocketHandler {
 					this.gameService.saveMatch(match);
 				}
 			} else {
-				this.sendToMatch(this.sessions.get(idMatch), "type", "INVALID MOVE", "message", "Movement is not valid!");
+				try {
+					match.getPlayerBoard(user.getId()).noMoveLose();
+					this.sendToMatch(this.sessions.get(idMatch), "type", "INVALID MOVE", "message", "Movement is not valid!");
+				}
+				catch(NoMovesAvailableException e) {
+					sendLose(match, userJson, sessionID);
+				}
+				finally {
+					
+				}
+				
 			}
 		}
+	}
+	private void sendLose(Match match, JSONObject userJson, String sessionID){
+	this.sendToMatch(this.sessions.get(match.getId()), "type", "LOSE", "sessionID", sessionID);
+	this.getDiffPlayerFromId(match, userJson).setWinner(true);;
+	this.gameService.saveMatch(match);	
 	}
 
 	private boolean isValidMovement(Match match, User user, JSONArray move) throws Exception, JSONException {
@@ -184,10 +201,8 @@ public class WSGames extends TextWebSocketHandler {
 		try {
 			match.getPlayerBoard(userJson.getString("id")).addNumbers();
 			this.sendUpdate(this.sessions.get(idMatch), match, sessionID, userJson.getString("id"));
-		} catch (BoardIsFullException e) {
-			this.sendToMatch(this.sessions.get(idMatch), "type", "LOSE", "sessionID", sessionID);
-			this.getDiffPlayerFromId(match, userJson).setWinner(true);;
-			this.gameService.saveMatch(match);
+		} catch (BoardIsFullException | NoMovesAvailableException  e) {
+			sendLose(match, userJson, sessionID);
 		};
 	}
 
@@ -197,7 +212,6 @@ public class WSGames extends TextWebSocketHandler {
 		String msg = jso.getString("message");
 		Match match = this.gameService.getMatch(idMatch);
 		JSONObject userJson = this.apiService.getUser(sessionID);
-		
 		
 		if (match != null && userJson != null) {
 			this.sendToMatch(this.sessions.get(match.getId()), "type", "CHAT MESSAGE",
@@ -215,7 +229,7 @@ public class WSGames extends TextWebSocketHandler {
 		return player;
 	}
 
-		 
+
 
 	@Override
 	protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {

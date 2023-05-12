@@ -11,10 +11,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import edu.uclm.esi.ds.games.entities.Match;
-import edu.uclm.esi.ds.games.entities.Movement;
 import edu.uclm.esi.ds.games.entities.NumberMatch;
 import edu.uclm.esi.ds.games.entities.Player;
 import edu.uclm.esi.ds.games.exceptions.BoardIsFullException;
+import edu.uclm.esi.ds.games.exceptions.NoMovesAvailableException;
 
 class PlayNumberMatchTest {
 	@Test
@@ -139,7 +139,7 @@ class PlayNumberMatchTest {
 	}
 	
 	@Test
-	void testAddNumbers() throws BoardIsFullException {
+	void testAddNumbers() throws BoardIsFullException, NoMovesAvailableException {
 		hr(); hr();
 		System.out.println("\nADD NUMBERS");
 		Board board = new Board();
