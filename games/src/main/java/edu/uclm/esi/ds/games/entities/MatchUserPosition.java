@@ -1,6 +1,5 @@
-package edu.uclm.esi.ds.games.domain;
-import edu.uclm.esi.ds.games.entities.MatchPlayerId;
-import edu.uclm.esi.ds.games.entities.User;
+package edu.uclm.esi.ds.games.entities;
+import edu.uclm.esi.ds.games.domain.MovementNM;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;

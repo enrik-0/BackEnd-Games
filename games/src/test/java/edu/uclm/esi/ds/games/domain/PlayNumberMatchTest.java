@@ -10,6 +10,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import edu.uclm.esi.ds.games.entities.Match;
+import edu.uclm.esi.ds.games.entities.Movement;
+import edu.uclm.esi.ds.games.entities.NumberMatch;
 import edu.uclm.esi.ds.games.entities.Player;
 import edu.uclm.esi.ds.games.exceptions.BoardIsFullException;
 

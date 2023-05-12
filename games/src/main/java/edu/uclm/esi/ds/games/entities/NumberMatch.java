@@ -1,4 +1,4 @@
-package edu.uclm.esi.ds.games.domain;
+package edu.uclm.esi.ds.games.entities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -9,16 +9,16 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import edu.uclm.esi.ds.games.entities.MatchPlayer;
-import edu.uclm.esi.ds.games.entities.User;
+import edu.uclm.esi.ds.games.domain.Board;
+import edu.uclm.esi.ds.games.domain.MovementNM;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
 @Table (schema = "games",
-		name ="nm")
-@PrimaryKeyJoinColumn(name="id")
+		name = "nm")
+@PrimaryKeyJoinColumn(name = "id")
 public class NumberMatch extends Match {
 	public NumberMatch() {
 		this.id = UUID.randomUUID().toString();
@@ -66,7 +66,7 @@ public class NumberMatch extends Match {
 			setReady(true);
 	}
 
-	protected void buildBoards() {
+	public void buildBoards() {
 		Board board = new Board();
 		String player = this.players.get(0).getId().getPlayer();
 		this.boards.put(player, board);
@@ -114,6 +114,7 @@ public class NumberMatch extends Match {
 	public boolean isValidMovement(User user, int i, int j) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		MovementNM move = new MovementNM(i, j);
 		boolean isValid = false;
+
 		if (move.isValid(this.getPlayerBoard(user.getId()).getDigits())) {
 			MatchUserPosition movement = new MatchUserPosition(this, user, move);
 			this.movements.add(movement);

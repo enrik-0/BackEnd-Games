@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import edu.uclm.esi.ds.games.entities.Match;
+import edu.uclm.esi.ds.games.entities.NumberMatch;
 import edu.uclm.esi.ds.games.entities.Player;
 
 public class WaitingRoom {

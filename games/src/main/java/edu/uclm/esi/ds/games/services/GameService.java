@@ -1,8 +1,8 @@
 package edu.uclm.esi.ds.games.services;
 
 import edu.uclm.esi.ds.games.dao.MatchDAO;
-import edu.uclm.esi.ds.games.domain.Match;
 import edu.uclm.esi.ds.games.domain.WaitingRoom;
+import edu.uclm.esi.ds.games.entities.Match;
 import edu.uclm.esi.ds.games.entities.Player;
 
 import java.util.concurrent.ConcurrentHashMap;

@@ -53,13 +53,13 @@ public class APIService {
 	 * @param add: true if update is for adding points, false if is for removing points.
 	 * @return true if operation is succesful, false otherwise.
 	 */
-	public boolean updatePoints(String sessionID, int ammount, boolean add) {
+	public boolean updatePoints(String sessionID, int ammount) {
 		boolean success = false;
 
 		try (CloseableHttpClient http = HttpClientBuilder.create().build()) {
 			HttpPut request = new HttpPut(
 					this.baseURL + "updatePoints?sessionID=" + sessionID +
-					"&ammount=" + ammount + "&add=" + add
+					"&ammount=" + ammount
 					);
 			CloseableHttpResponse response = http.execute(request);
 			int code = response.getStatusLine().getStatusCode();

@@ -4,10 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import edu.uclm.esi.ds.games.entities.Movement;
 import edu.uclm.esi.ds.games.exceptions.InvalidMoveException;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
 
 public class MovementNM implements Movement{
 	private byte[] position = new byte[2];
@@ -167,7 +165,8 @@ public class MovementNM implements Movement{
 			//diagonal down right
 			all.addAll(this.launcher(this, methods[4], board, position[0], lengthH));
 			//vertical down
-			all.addAll(this.launcher(this, methods[5], board, position[0], lengthH, lengthV));
+			all.addAll(this.launcher(this, methods[5], board, position[0],
+					lengthH, lengthV));
 			//diagonal down left
 			all.addAll(this.launcher(this, methods[6], board, position[0], lengthH));
 			//horizontal left
@@ -178,7 +177,7 @@ public class MovementNM implements Movement{
 
 	private ArrayList<Byte> launcher(Object object, Method method, ArrayList<Number> board, byte... w) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 
-		byte q;
+		byte buffer;
 		//vertical need a counter so we check if the method is vertical
 		boolean isVertical = method.getName().toLowerCase().contains("vertical");
 		boolean next = true;
@@ -215,8 +214,8 @@ public class MovementNM implements Movement{
 
 			if (isVertical) {
 				try {
-				 q = (byte) (Integer.parseInt(parameters[w.length].toString()) + 1);
-				 parameters[w.length] = q ;
+				 buffer = (byte) (Integer.parseInt(parameters[w.length].toString()) + 1);
+				 parameters[w.length] = buffer ;
 				 }catch(Exception e) {
 					 System.out.println(e.getMessage());
 				 }
@@ -231,21 +230,21 @@ public class MovementNM implements Movement{
 		try{
 			
 			//diagonal up left
-			methods[0] = createFunction("calcDiagonalLUp",2);
+			methods[0] = createFunction("calcDiagonalLUp", 2);
 			//vertical up
 			methods[1] = createFunction("calcVerticalUp", 3);
 			//diagonal  up right
 			methods[2] = createFunction("calcDiagonalRUp", 2);
 			//horizontal right
-			methods[3] = createFunction("calcHorizontalR",2);
+			methods[3] = createFunction("calcHorizontalR", 2);
 			//diagonal down right
 			methods[4] = createFunction("calcDiagonalRDown", 2);
 			//vertical down
 			methods[5] = createFunction("calcVerticalDown", 4);
 			//diagonal down left
-			methods[6] = createFunction("calcDiagonalLDown",2);
+			methods[6] = createFunction("calcDiagonalLDown", 2);
 			//horizontal left
-			methods[7] = createFunction("calcHorizontalL",1);
+			methods[7] = createFunction("calcHorizontalL", 1);
 		}catch(NoSuchMethodException | SecurityException e) {}
 		return methods;
 	}

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import edu.uclm.esi.ds.games.domain.GameName;
-import edu.uclm.esi.ds.games.domain.Match;
+import edu.uclm.esi.ds.games.entities.Match;
 import edu.uclm.esi.ds.games.services.APIService;
 import edu.uclm.esi.ds.games.services.GameService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,7 +63,7 @@ public class GameController {
 			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED, "You don't have enough points");
 		}
 		
-		if (!this.apiService.updatePoints(sessionID, ammount, false)) {
+		if (!this.apiService.updatePoints(sessionID,ammount * -1)) {
 			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED, "Unable to update points.");
 		}
 		
