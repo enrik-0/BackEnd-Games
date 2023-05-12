@@ -1,5 +1,4 @@
 package edu.uclm.esi.ds.games.entities;
-import edu.uclm.esi.ds.games.domain.Match;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

@@ -1,10 +1,11 @@
-package edu.uclm.esi.ds.games.domain;
-import edu.uclm.esi.ds.games.entities.MatchPlayerId;
-import edu.uclm.esi.ds.games.entities.User;
+package edu.uclm.esi.ds.games.entities;
+import edu.uclm.esi.ds.games.domain.MovementNM;
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -12,15 +13,14 @@ import jakarta.persistence.Table;
 @Entity
 @Table(schema = "games", name = "match_positions")
 public class MatchUserPosition {
-	@EmbeddedId
-	private MatchPlayerId id;
-	
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "match", insertable = false, updatable = false)
+    @JoinColumn(name = "match")
     private Match match;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "player", insertable = false, updatable = false)
+    @JoinColumn(name = "player")
     private User player;
 	
 
@@ -37,8 +37,6 @@ public class MatchUserPosition {
     	this.player = player;
     	this.position1 = move.getFirst();
     	this.position2 = move.getSecond();
-    	this.id = new MatchPlayerId(match.getId(), player.getId());
-    	
     }
     
 	public Match getMatch() {
@@ -71,6 +69,10 @@ public class MatchUserPosition {
 
 	public void setPosition2(int position2) {
 		this.position2 = (byte) position2;
+	}
+
+	public long getId() {
+		return id;
 	}
 
 }

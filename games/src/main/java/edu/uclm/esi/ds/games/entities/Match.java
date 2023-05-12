@@ -1,11 +1,10 @@
-package edu.uclm.esi.ds.games.domain;
+package edu.uclm.esi.ds.games.entities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 
-import edu.uclm.esi.ds.games.entities.MatchPlayer;
-import edu.uclm.esi.ds.games.entities.User;
+import edu.uclm.esi.ds.games.domain.Board;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -16,7 +15,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(
 		schema = "games",
 		name = "matches")
@@ -46,7 +45,7 @@ public abstract class Match {
 	public abstract List<MatchUserPosition> getMovements();
 	public abstract boolean isReady();
 	public abstract void addPlayer(User player);
-	protected abstract void buildBoards();
+	public abstract void buildBoards();
 	public abstract boolean isValidMovement(User user, int i, int j) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 	public abstract boolean updateUserBoard(String userId, int i, int j);
 }

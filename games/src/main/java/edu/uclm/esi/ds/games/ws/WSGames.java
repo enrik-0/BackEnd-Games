@@ -14,11 +14,12 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import edu.uclm.esi.ds.games.domain.Match;
+import edu.uclm.esi.ds.games.entities.Match;
 import edu.uclm.esi.ds.games.entities.MatchPlayer;
 import edu.uclm.esi.ds.games.entities.Player;
 import edu.uclm.esi.ds.games.entities.User;
 import edu.uclm.esi.ds.games.exceptions.BoardIsFullException;
+import edu.uclm.esi.ds.games.exceptions.NoMovesAvailableException;
 import edu.uclm.esi.ds.games.services.APIService;
 import edu.uclm.esi.ds.games.services.GameService;
 
@@ -135,7 +136,7 @@ public class WSGames extends TextWebSocketHandler {
 		String sessionID = jso.getString("sessionID");
 		JSONArray move = jso.getJSONArray("movement");
 		Match match = this.gameService.getMatch(idMatch);
-		JSONObject userJson = this.getUser(sessionID);
+		JSONObject userJson = this.apiService.getUser(sessionID);
 		User user = null;
 		if (userJson != null)
 			user = new Player(userJson.getString("id"),
@@ -146,7 +147,7 @@ public class WSGames extends TextWebSocketHandler {
 
 		if (match != null && userJson != null) {
 			if (this.isValidMovement(match, user, move)) {
-				isWin = this.updateBoard(match, userJson.getString("id"), move);
+				isWin = match.updateUserBoard(user.getId(), move.getInt(0), move.getInt(1));
 				this.sendUpdate(this.sessions.get(idMatch), match, sessionID, userJson.getString("id"));
 				if (isWin) {
 					this.sendToMatch(this.sessions.get(idMatch), "type", "WIN", "sessionID", sessionID);
@@ -154,9 +155,24 @@ public class WSGames extends TextWebSocketHandler {
 					this.gameService.saveMatch(match);
 				}
 			} else {
-				this.sendToMatch(this.sessions.get(idMatch), "type", "INVALID MOVE", "message", "Movement is not valid!");
+				try {
+					match.getPlayerBoard(user.getId()).noMoveLose();
+					this.sendToMatch(this.sessions.get(idMatch), "type", "INVALID MOVE", "message", "Movement is not valid!");
+				}
+				catch(NoMovesAvailableException e) {
+					sendLose(match, userJson, sessionID);
+				}
+				finally {
+					
+				}
+				
 			}
 		}
+	}
+	private void sendLose(Match match, JSONObject userJson, String sessionID){
+	this.sendToMatch(this.sessions.get(match.getId()), "type", "LOSE", "sessionID", sessionID);
+	this.getDiffPlayerFromId(match, userJson).setWinner(true);;
+	this.gameService.saveMatch(match);	
 	}
 
 	private boolean isValidMovement(Match match, User user, JSONArray move) throws Exception, JSONException {
@@ -168,9 +184,6 @@ public class WSGames extends TextWebSocketHandler {
 		return valid;
 	}
 
-	private boolean updateBoard(Match match, String userId, JSONArray move) throws Exception {
-		return match.updateUserBoard(userId, move.getInt(0), move.getInt(1));
-	}
 
 	private void sendUpdate(ArrayList<WebSocketSession> sessions, Match match, String sessionID, String userId) {
 		JSONObject board = new JSONObject(match.getPlayerBoard(userId));
@@ -183,15 +196,13 @@ public class WSGames extends TextWebSocketHandler {
 		String idMatch = jso.getString("idMatch");
 		String sessionID = jso.getString("sessionID");
 		Match match = this.gameService.getMatch(idMatch);
-		JSONObject userJson = this.getUser(sessionID);
+		JSONObject userJson = this.apiService.getUser(sessionID);
 		
 		try {
 			match.getPlayerBoard(userJson.getString("id")).addNumbers();
 			this.sendUpdate(this.sessions.get(idMatch), match, sessionID, userJson.getString("id"));
-		} catch (BoardIsFullException e) {
-			this.sendToMatch(this.sessions.get(idMatch), "type", "LOSE", "sessionID", sessionID);
-			this.getDiffPlayerFromId(match, userJson).setWinner(true);;
-			this.gameService.saveMatch(match);
+		} catch (BoardIsFullException | NoMovesAvailableException  e) {
+			sendLose(match, userJson, sessionID);
 		};
 	}
 
@@ -200,7 +211,7 @@ public class WSGames extends TextWebSocketHandler {
 		String sessionID = jso.getString("sessionID");
 		String msg = jso.getString("message");
 		Match match = this.gameService.getMatch(idMatch);
-		JSONObject userJson = this.getUser(sessionID);
+		JSONObject userJson = this.apiService.getUser(sessionID);
 		
 		if (match != null && userJson != null) {
 			this.sendToMatch(this.sessions.get(match.getId()), "type", "CHAT MESSAGE",
@@ -218,9 +229,7 @@ public class WSGames extends TextWebSocketHandler {
 		return player;
 	}
 
-	private JSONObject getUser(String sessionID) {
-		return this.apiService.getUser(sessionID);
-	}
+
 
 	@Override
 	protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
