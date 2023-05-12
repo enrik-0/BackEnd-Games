@@ -63,7 +63,7 @@ public class GameController {
 			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED, "You don't have enough points");
 		}
 		
-		if (!this.apiService.updatePoints(sessionID,ammount * -1)) {
+		if (!this.apiService.updatePoints(sessionID, ammount, false)) {
 			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED, "Unable to update points.");
 		}
 		
