@@ -169,10 +169,11 @@ public class WSGames extends TextWebSocketHandler {
 			}
 		}
 	}
+
 	private void sendLose(Match match, JSONObject userJson, String sessionID){
-	this.sendToMatch(this.sessions.get(match.getId()), "type", "LOSE", "sessionID", sessionID);
-	this.getDiffPlayerFromId(match, userJson).setWinner(true);;
-	this.gameService.saveMatch(match);	
+		this.sendToMatch(this.sessions.get(match.getId()), "type", "LOSE", "sessionID", sessionID);
+		this.getDiffPlayerFromId(match, userJson).setWinner(true);;
+		this.gameService.saveMatch(match);	
 	}
 
 	private boolean isValidMovement(Match match, User user, JSONArray move) throws Exception, JSONException {
@@ -228,8 +229,6 @@ public class WSGames extends TextWebSocketHandler {
 		
 		return player;
 	}
-
-
 
 	@Override
 	protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
